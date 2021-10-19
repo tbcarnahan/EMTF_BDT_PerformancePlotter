@@ -2,3 +2,5 @@
 *.swp
 *.__init__
 *.root
+*.pdf
+*__pycach__*
