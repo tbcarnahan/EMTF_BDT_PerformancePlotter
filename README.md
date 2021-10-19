@@ -6,7 +6,7 @@ This repository contains tools to evaluate the performance of the EMTF BDT after
 ```
 git clone git@github.com:jrotter2/EMTF_BDT_PerformancePlotter.git
 
-pip3 install -r requirements.txt
+pip3 install -r requirements.txt --user
 ```
 ## Structure
 

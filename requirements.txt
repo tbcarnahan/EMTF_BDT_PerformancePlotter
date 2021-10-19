@@ -6,4 +6,5 @@ scipy
 uproot
 scikit-learn
 boost-histogram
-
+awkward1
+tqdm
