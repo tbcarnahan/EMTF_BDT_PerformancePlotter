@@ -1,0 +1,8 @@
+hist
+mplhep
+matplotlib
+numpy
+scipy
+uproot
+scikit-learn
+
