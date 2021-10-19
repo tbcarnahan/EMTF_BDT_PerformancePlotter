@@ -29,7 +29,7 @@ def getMaskedAndConvertedArrays(awk_unbinned_GEN_pt, awk_unbinned_BDTG_AWB_Sq, a
     unbinned_GEN_eta_mask = np.full(awkward.count(awk_unbinned_GEN_pt), True, dtype=bool)
     for i in tqdm(range(0, awkward.count(awk_unbinned_GEN_pt))):
         eta = getValueFromAwkward(awk_unbinned_GEN_eta, i)
-        if(Math.abs(eta) >= eta_min and Math.abs(eta) <= eta_max):
+        if(abs(eta) >= eta_min and abs(eta) <= eta_max):
             
             unbinned_GEN_pt = np.append(unbinned_GEN_pt, getValueFromAwkward(awk_unbinned_GEN_pt, i))
             EMTF_pt_value = getPtFromTrainingVar(getValueFromAwkward(awk_unbinned_BDTG_AWB_Sq, i))
