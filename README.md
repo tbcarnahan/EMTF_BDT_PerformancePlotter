@@ -18,7 +18,11 @@ Additionally there are helper classes in the `helpers` directory which can be us
 `plotter.py` is responsible for making general plots.
 
 ### Efficiency Plotter
-`efficiencyPlotter.py` is responsible for making efficiency plots.
+`efficiencyPlotter.py` is responsible for making efficiency plots. It can be called directly by:
+```
+python3 efficiencyPlotter.py <options> outputDir inputFile
+```
+To see a full list of options you can execute `python3 efficiencyPlotter.py --help`
 
 ### Occupancy Plotter
 `occupancyPlotter.py` is responsible for making occupancy plots.

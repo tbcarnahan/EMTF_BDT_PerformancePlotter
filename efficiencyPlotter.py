@@ -23,7 +23,6 @@ if __name__ == "__main__":
                      help="EMTF pt Cut (GeV)", default=22)
     parser.add_option("-v","--verbose", dest="verbose",
                      help="Print extra debug info", default=False)
-    parser.add_option("--tree-name", dest="tree_name", default = "f_logPtTarg_invPtWgt/TestTree")
     options, args = parser.parse_args()
 
     if(options.verbose):
