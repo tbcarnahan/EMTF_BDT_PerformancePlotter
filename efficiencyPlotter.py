@@ -11,6 +11,7 @@ import numpy as np
 import scipy
 import awkward
 import sys
+import os
 
 if __name__ == "__main__":
     from optparse import OptionParser
@@ -64,10 +65,15 @@ if __name__ == "__main__":
     
     import efficiencyPlotter
     from matplotlib.backends.backend_pdf import PdfPages
-
+    file_name_mod = 0
+    if(not os.path.isdir(args[0])):
+        os.mkdir(args[0])
+    while(os.path.isfile(args[0] + "/plots" + str(file_name_mod) + ".pdf")):
+        file_name_mod += 1;
     if(options.verbose):
-        print("\nOpening PDF:" + args[0] + "/plots.pdf" + "\n")
-    pp = PdfPages(args[0] + "/plots.pdf")
+        print("\nOpening PDF:" + args[0] + "/plots" + str(file_name_mod) + ".pdf" + "\n")
+    
+    pp = PdfPages(args[0] + "/plots" + str(file_name_mod) + ".pdf")
 
     pt_cuts = options.pt_cuts
     eta_mins = options.eta_mins
@@ -81,7 +87,8 @@ if __name__ == "__main__":
             fig = efficiencyPlotter.makeEfficiencyPlot(unbinned_GEN_pt_pass_eta_masked, unbinned_GEN_pt_eta_masked,
                                               "EMTF BDT Efficiency", "mode:" + str(options.emtf_mode)
                                               + "\n" + str(eta_mins[i]) + " < $\eta$ < " + str(eta_maxs[i])
-                                              + "\n" + str(pt_cut) + "GeV < $p_T$", options.verbose)
+                                              + "\n" + str(pt_cut) + "GeV < $p_T$"
+                                              + "\n" + "$N_{events}$="+str(len(unbinned_GEN_pt_eta_masked)), pt_cut, options.verbose)
             fig.set_size_inches(6, 4.5)
             pp.savefig(fig)
     if(options.verbose):
@@ -118,15 +125,19 @@ def getEfficiciencyHist(num_binned, den_binned):
         efficiency_binned_err[1] = np.append(efficiency_binned_err[1], [(scipy.stats.beta.ppf(1 - alpha/2, num_binned[i]+1, den_binned[i]-num_binned[i]) - efficiency_binned[i])/efficiency_binned[i]])# - efficiency_binned[i]])
     return efficiency_binned, efficiency_binned_err
 
-def makeEfficiencyPlot(num_unbinned, den_unbinned, title, textStr, verbose=False):
+def makeEfficiencyPlot(num_unbinned, den_unbinned, title, textStr, pt_cut, verbose=False):
 
     if(verbose):
         print("\nInitializing Figures and Binning Histograms")
 
     #plt.style.use(hep.style.CMS)
-
-    den_binned, den_bins = np.histogram(den_unbinned, 250, (0,1000))
-    num_binned, num_bins = np.histogram(num_unbinned, 250, (0,1000))
+    bins = [   0,    4,    8,   12,   16,   20,   24,   28,   32,   36,   40,   44,
+              48,   52,   56,   60,   64,   68,   72,   76,   80,   84,   88,   92,
+              96,  100,  104,  108,  112,  116,  120,  124,  128,  132,  136,  140,
+             144,  148,  152,  156,  160,  164,  168,  172,  176,  180,  184,  188,
+             192,  196,  200,  300,  400,  500,  600,  700,  800,  900,  1000]
+    den_binned, den_bins = np.histogram(den_unbinned, bins, (0,1000))
+    num_binned, num_bins = np.histogram(num_unbinned, bins, (0,1000))
 
     if(verbose):
         print("Generating Efficiency Plot")
@@ -136,11 +147,13 @@ def makeEfficiencyPlot(num_unbinned, den_unbinned, title, textStr, verbose=False
     ax.errorbar(den_bins[0:-1], efficiency_binned, yerr=efficiency_binned_err, xerr=None, capsize=3, linestyle="", marker=".")#efficiency_binned_err
     ax.set_ylabel("Efficiency")
     ax.set_xlabel("$p_T$(GeV)")
+    ax.axhline(y=0.9, color='r', linestyle='--')
+    ax.axvline(x=pt_cut, color='r', linestyle='--')
     ax.set_title(title)
     props = dict(boxstyle='square', facecolor='white', alpha=1.0)
     # place a text box in upper left in axes coords
     ax.text(0.90, 0.05, textStr, transform=ax.transAxes, fontsize=10, verticalalignment='bottom', horizontalalignment='right', bbox=props)
-
+    ax.set_ylim([0,1])
     if(verbose):
         print("Finished Creating Figures\n")
     return fig
