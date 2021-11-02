@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 
 import uproot
+from matplotlib.backends.backend_pdf import PdfPages
+import os
 
 def getFile(file_path = "", verbose = False):
     if(verbose):
@@ -64,5 +66,21 @@ def getBranch(target_file, path_to_branch, verbose):
         print("Found branch: " + target.name + "\n") 
 
     return target
+
+
+def openPdfPages(directory, file_name, verbose):
+    file_name_mod = ""
+    file_name_index = 0
+    if(not os.path.isdir(directory)):
+        os.mkdir(directory)
+    while(os.path.isfile(directory + "/" + file_name + str(file_name_mod) + ".pdf")):
+        file_name_mod = file_name_mod + str(file_name_index)
+        file_name_index += 1
+
+    if(verbose):
+        print("\nOpening PDF:" + directory + "/plots" + str(file_name_mod) + ".pdf" + "\n")
+
+    pdf_pages = PdfPages(directory + "/" + file_name + str(file_name_mod) + ".pdf")
+    return pdf_pages
 
 
