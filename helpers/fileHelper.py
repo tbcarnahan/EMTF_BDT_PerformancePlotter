@@ -74,7 +74,7 @@ def openPdfPages(directory, file_name, verbose):
     if(not os.path.isdir(directory)):
         os.mkdir(directory)
     while(os.path.isfile(directory + "/" + file_name + str(file_name_mod) + ".pdf")):
-        file_name_mod = file_name_mod + str(file_name_index)
+        file_name_mod = str(file_name_index)
         file_name_index += 1
 
     if(verbose):
