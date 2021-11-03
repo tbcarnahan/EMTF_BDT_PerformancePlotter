@@ -4,10 +4,21 @@ This repository contains tools to evaluate the performance of the EMTF BDT after
 ## Setup
 
 ```
+source /cvmfs/cms.cern.ch/cmsset_default.sh
+cmsrel CMSSW_11_1_9 
+cd CMSSW_11_1_9/src
+cmsenv
+
 git clone git@github.com:jrotter2/EMTF_BDT_PerformancePlotter.git
 
 pip3 install -r requirements.txt --user
 ```
+
+In order to access files from EOS you will need to authenticate in your session using,
+```
+voms-proxy-init --voms cms
+```
+
 ## Structure
 
 The repository is structure so that one could run each individual plotter seperataly or call the general plotter to make multiple different types of performance plots.
@@ -24,6 +35,8 @@ python3 efficiencyPlotter.py <options> outputDir inputFile
 ```
 To see a full list of options you can execute `python3 efficiencyPlotter.py --help`
 
+This plotter will generate efficiency vs pT and efficiency vs eta plots for multiple selections passed through `<options>`.
+
 ### Occupancy Plotter
 `occupancyPlotter.py` is responsible for making occupancy plots.
 
@@ -32,5 +45,4 @@ To see a full list of options you can execute `python3 efficiencyPlotter.py --he
 
 ### Helpers
 Stored in the `helpers` directory, are used to store multiuse functions or useful calculations.
-
 
