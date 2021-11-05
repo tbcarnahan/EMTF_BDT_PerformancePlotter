@@ -1,22 +1,51 @@
-#EMTF BDT Performance Plotter
+# EMTF BDT Performance Plotter
 This repository contains tools to evaluate the performance of the EMTF BDT after retraining.
 
 ## Setup
 
+### For Running
 ```
 source /cvmfs/cms.cern.ch/cmsset_default.sh
-cmsrel CMSSW_11_1_9 
-cd CMSSW_11_1_9/src
+cmsrel CMSSW_10_6_1_patch2 
+cd CMSSW_10_6_1_patch2/src
 cmsenv
 
 git clone git@github.com:jrotter2/EMTF_BDT_PerformancePlotter.git
+cd EMTF_BDT_PerformancePlotter
 
 pip3 install -r requirements.txt --user
 ```
 
-In order to access files from EOS you will need to authenticate in your session using,
+### For Developing
+You should first fork this repository.
 ```
+source /cvmfs/cms.cern.ch/cmsset_default.sh
+cmsrel CMSSW_10_6_1_patch2
+cd CMSSW_10_6_1_patch2/src
+cmsenv
+
+git clone git@github.com:<your_GitHub_username>/EMTF_BDT_PerformancePlotter.git
+git checkout -b <your_branch_name>
+git push origin <your_branch_name>
+
+pip3 install -r requirements.txt --user
+```
+After you have made changes you can push them to your branch using,
+```
+git add .
+git commit -m "Some Message..."
+git push
+```
+Once your changes are stable and complete they can merged via a PR to the master branch.
+
+### Upon Logging In (Each Session)
+It is recommended that you add these to your bash profile.
+In order to access files from EOS you will need to setup your environment for your session using,
+```
+source /cvmfs/cms.cern.ch/cmsset_default.sh
 voms-proxy-init --voms cms
+cd ~/path/to/your/directory/CMSSW_10_6_1_patch2/src/
+cmsenv
 ```
 
 ## Structure
