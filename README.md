@@ -1,4 +1,4 @@
-#EMTF BDT Performance Plotter
+## EMTF BDT Performance Plotter
 This repository contains tools to evaluate the performance of the EMTF BDT after retraining.
 
 ## Setup
@@ -41,7 +41,11 @@ This plotter will generate efficiency vs pT and efficiency vs eta plots for mult
 `occupancyPlotter.py` is responsible for making occupancy plots.
 
 ### Resolution Plotter
-`resolutionPlotter.py` is responsible for making resolution plots.
+`resolutionPlotter.py` is responsible for making resolution plots. It can be called directly by:
+```
+python3 resolutionPlotter.py <options> outputDir inputFile
+```
+This plotter will generate resolutions using a Gaussian distribution.
 
 ### Helpers
 Stored in the `helpers` directory, are used to store multiuse functions or useful calculations.
