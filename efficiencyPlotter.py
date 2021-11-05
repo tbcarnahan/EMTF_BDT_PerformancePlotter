@@ -66,7 +66,7 @@ if __name__ == "__main__":
     # Group branches into dictionary for reference
     unbinned_EVT_data = {}
     unbinned_EVT_data['GEN_pt'] = branch_GEN_pt.arrays()['GEN_pt']
-    unbinned_EVT_data['BDT_pt'] = 2**branch_BDTG_AWB_Sq.arrays()['BDTG_AWB_Sq']
+    unbinned_EVT_data['BDT_pt'] = helper.scaleBDTPtRun2(2**branch_BDTG_AWB_Sq.arrays()['BDTG_AWB_Sq'])
     unbinned_EVT_data['GEN_eta'] = branch_GEN_eta.arrays()['GEN_eta']
     unbinned_EVT_data['TRK_hit_ids'] = branch_TRK_hit_ids.arrays()['TRK_hit_ids']
 
@@ -105,8 +105,20 @@ if __name__ == "__main__":
                                             (pt_cut < unbinned_EVT_data_eta_masked["BDT_pt"]),
                                             "PT CUT: " + str(pt_cut) + " < pT", options.verbose)
 
+            # Apply Plataue Cut
+            unbinned_EVT_data_eta_masked_plataue = helper.applyMaskToEVTData(
+                                            unbinned_EVT_data_eta_masked,
+                                            ["GEN_pt", "BDT_pt", "GEN_eta", "TRK_hit_ids"],
+                                            (pt_cut+10 < unbinned_EVT_data_eta_masked["GEN_pt"]),
+                                            "GEN PT CUT: " + str(pt_cut) + " < pT", options.verbose)
+            unbinned_EVT_data_eta_masked_plataue_pt_pass = helper.applyMaskToEVTData(
+                                            unbinned_EVT_data_eta_masked_plataue,
+                                            ["GEN_pt", "GEN_eta"],
+                                            (pt_cut < unbinned_EVT_data_eta_masked_plataue["BDT_pt"]),
+                                            "Plataue PT CUT: " + str(pt_cut) + " < pT", options.verbose)
+
             # Generate efficiency vs eta plot
-            eta_fig = efficiencyPlotter.makeEfficiencyVsEtaPlot(unbinned_EVT_data_eta_masked_pt_pass["GEN_eta"], unbinned_EVT_data_eta_masked["GEN_eta"],
+            eta_fig = efficiencyPlotter.makeEfficiencyVsEtaPlot(unbinned_EVT_data_eta_masked_plataue_pt_pass["GEN_eta"], unbinned_EVT_data_eta_masked_plataue["GEN_eta"],
                                                "EMTF BDT Efficiency", "mode: " + str(options.emtf_mode)
                                               + "\n" + str(eta_mins[i]) + " < $\eta$ < " + str(eta_maxs[i])
                                               + "\n $p_T$ > " + str(pt_cut) + "GeV"

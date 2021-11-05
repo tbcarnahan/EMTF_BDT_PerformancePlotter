@@ -1,7 +1,15 @@
-
+import numpy as np
 
 def scaleBDTFunction(unbinned_BDT_pT, pt_scaling_A, pt_scaling_B):
-    return (pt_scaling_A * unbinned_BDT_pT)/(1 - (pt_scaling_B * unbinned_BDT_pT))
+
+    pt_min = 20
+    unbinned_BDT_pT_scaled = np.where(unbinned_BDT_pT > pt_min, unbinned_BDT_pT, (pt_scaling_A * unbinned_BDT_pT)/(1 - (pt_scaling_B * unbinned_BDT_pT)))
+    unbinned_BDT_pT_scaled = np.where(unbinned_BDT_pT <= pt_min, unbinned_BDT_pT_scaled, (pt_scaling_A * unbinned_BDT_pT)/(1 - (pt_scaling_B * pt_min)))
+
+    for x in range(0, 100):
+        print(unbinned_BDT_pT[x], unbinned_BDT_pT_scaled[x], unbinned_BDT_pT_scaled[x]/unbinned_BDT_pT[x],(pt_scaling_A)/(1 - (pt_scaling_B * unbinned_BDT_pT[x])))
+
+    return unbinned_BDT_pT_scaled
 
 def scaleBDTPtRun2(unbinned_BDT_pT):
     return scaleBDTFunction(unbinned_BDT_pT, 1.2, 0.015)
