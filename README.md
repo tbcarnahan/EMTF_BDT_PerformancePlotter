@@ -59,7 +59,7 @@ Additionally there are helper classes in the `helpers` directory which can be us
 ```
 python3 plotter.py <options> outputDir outputFileName inputFile
 ```
-The options `-e` or `--eff` will set a flag to create efficiency plots and `-r` or `--res` will seta flag to create resolution plots. Additional options can be seen by running `python3 plotter.py --help`
+The options `-e`(or `--eff`) will set a flag to create efficiency plots and `-r`(or `--res`) will set a flag to create resolution plots. Additional options can be seen by running `python3 plotter.py --help`.
 ### Efficiency Plotter
 `efficiencyPlotter.py` is responsible for making efficiency plots. It can be called directly by:
 ```
