@@ -61,6 +61,7 @@ if __name__ == "__main__":
     branch_GEN_pt = fileHelper.getBranch(target_file,"f_logPtTarg_invPtWgt/TestTree/GEN_pt", options.verbose)
     branch_BDTG_AWB_Sq = fileHelper.getBranch(target_file,"f_logPtTarg_invPtWgt/TestTree/BDTG_AWB_Sq", options.verbose)
     branch_GEN_eta = fileHelper.getBranch(target_file,"f_logPtTarg_invPtWgt/TestTree/GEN_eta", options.verbose)
+    branch_GEN_phi = fileHelper.getBranch(target_file,"f_logPtTarg_invPtWgt/TestTree/GEN_phi", options.verbose)
     branch_TRK_hit_ids = fileHelper.getBranch(target_file,"f_logPtTarg_invPtWgt/TestTree/TRK_hit_ids", options.verbose)
 
     # Group branches into dictionary for reference
@@ -68,6 +69,7 @@ if __name__ == "__main__":
     unbinned_EVT_data['GEN_pt'] = branch_GEN_pt.arrays()['GEN_pt']
     unbinned_EVT_data['BDT_pt'] = helper.scaleBDTPtRun2(2**branch_BDTG_AWB_Sq.arrays()['BDTG_AWB_Sq'])
     unbinned_EVT_data['GEN_eta'] = branch_GEN_eta.arrays()['GEN_eta']
+    unbinned_EVT_data['GEN_phi'] = branch_GEN_phi.arrays()['GEN_phi']
     unbinned_EVT_data['TRK_hit_ids'] = branch_TRK_hit_ids.arrays()['TRK_hit_ids']
 
     # Open a matplotlib PDF Pages file
@@ -94,50 +96,57 @@ if __name__ == "__main__":
             # Apply ETA Mask
             unbinned_EVT_data_eta_masked = helper.applyMaskToEVTData(
                                             unbinned_EVT_data,
-                                            ["GEN_pt", "BDT_pt", "GEN_eta", "TRK_hit_ids"], 
+                                            ["GEN_pt", "BDT_pt", "GEN_eta", "GEN_phi", "TRK_hit_ids"], 
                                             ((eta_mins[i] < abs(unbinned_EVT_data["GEN_eta"])) & (eta_maxs[i] > abs(unbinned_EVT_data["GEN_eta"]))),
                                             "ETA CUT: " + str(eta_mins[i]) + " < eta < " + str(eta_maxs[i]), options.verbose)
             
             # Apply PT Cut mask
             unbinned_EVT_data_eta_masked_pt_pass = helper.applyMaskToEVTData(
                                             unbinned_EVT_data_eta_masked,
-                                            ["GEN_pt", "GEN_eta"],
+                                            ["GEN_pt", "GEN_eta", "GEN_phi"],
                                             (pt_cut < unbinned_EVT_data_eta_masked["BDT_pt"]),
                                             "PT CUT: " + str(pt_cut) + " < pT", options.verbose)
 
             # Apply Plataue Cut
             unbinned_EVT_data_eta_masked_plataue = helper.applyMaskToEVTData(
                                             unbinned_EVT_data_eta_masked,
-                                            ["GEN_pt", "BDT_pt", "GEN_eta", "TRK_hit_ids"],
+                                            ["GEN_pt", "BDT_pt", "GEN_eta", "GEN_phi", "TRK_hit_ids"],
                                             (pt_cut+10 < unbinned_EVT_data_eta_masked["GEN_pt"]),
                                             "GEN PT CUT: " + str(pt_cut) + " < pT", options.verbose)
+            # Apply PT Cut to Plataue
             unbinned_EVT_data_eta_masked_plataue_pt_pass = helper.applyMaskToEVTData(
                                             unbinned_EVT_data_eta_masked_plataue,
-                                            ["GEN_pt", "GEN_eta"],
+                                            ["GEN_pt", "GEN_eta", "GEN_phi"],
                                             (pt_cut < unbinned_EVT_data_eta_masked_plataue["BDT_pt"]),
                                             "Plataue PT CUT: " + str(pt_cut) + " < pT", options.verbose)
 
             # Generate efficiency vs eta plot
             eta_fig = efficiencyPlotter.makeEfficiencyVsEtaPlot(unbinned_EVT_data_eta_masked_plataue_pt_pass["GEN_eta"], unbinned_EVT_data_eta_masked_plataue["GEN_eta"],
-                                               "EMTF BDT Efficiency", "mode: " + str(options.emtf_mode)
+                                               "EMTF BDT Efficiency \n $\epsilon$ vs $\eta$", "mode: " + str(options.emtf_mode)
                                               + "\n" + str(eta_mins[i]) + " < $\eta$ < " + str(eta_maxs[i])
                                               + "\n $p_T$ > " + str(pt_cut) + "GeV"
-                                              + "\n" + "$N_{events}$: "+str(len(unbinned_EVT_data_eta_masked["GEN_eta"])), pt_cut, options.verbose)
+                                              + "\n" + "$N_{events}$: "+str(len(unbinned_EVT_data_eta_masked_plataue["GEN_eta"])), pt_cut, options.verbose)
+            # Generate efficiency vs phi plot
+            phi_fig = efficiencyPlotter.makeEfficiencyVsPhiPlot(unbinned_EVT_data_eta_masked_plataue_pt_pass["GEN_phi"], unbinned_EVT_data_eta_masked_plataue["GEN_phi"],
+                                               "EMTF BDT Efficiency \n $\epsilon$ vs $\phi$", "mode: " + str(options.emtf_mode)
+                                              + "\n" + str(eta_mins[i]) + " < $\eta$ < " + str(eta_maxs[i])
+                                              + "\n $p_T$ > " + str(pt_cut) + "GeV"
+                                              + "\n" + "$N_{events}$: "+str(len(unbinned_EVT_data_eta_masked_plataue["GEN_phi"])), pt_cut, options.verbose)
 
             # Generate efficiency vs pt plot
             pt_fig = efficiencyPlotter.makeEfficiencyVsPtPlot(unbinned_EVT_data_eta_masked_pt_pass["GEN_pt"], unbinned_EVT_data_eta_masked["GEN_pt"],
-                                              "EMTF BDT Efficiency", "mode: " + str(options.emtf_mode)
+                                              "EMTF BDT Efficiency \n $\epsilon$ vs $p_T$", "mode: " + str(options.emtf_mode)
                                               + "\n" + str(eta_mins[i]) + " < $\eta$ < " + str(eta_maxs[i])
                                               + "\n $p_T$ > " + str(pt_cut) + "GeV"
                                               + "\n" + "$N_{events}$: "+str(len(unbinned_EVT_data_eta_masked["GEN_pt"])), pt_cut, options.verbose)
             # Increase size to square 6in x 6in on PDF
             pt_fig.set_size_inches(6, 6)
+            phi_fig.set_size_inches(6, 6)
             eta_fig.set_size_inches(6,6)
-            plt.close(pt_fig)
-            plt.close(eta_fig)
             # Save figures to PDF
             pp.savefig(pt_fig)
             pp.savefig(eta_fig)
+            pp.savefig(phi_fig)
     if(options.verbose):
         print("\nClosing PDF\n")
     #Close PDF
@@ -148,7 +157,6 @@ if __name__ == "__main__":
     if(options.verbose):
         print("------------------------------------------------")
         print("DONE.\n")
-
 
 
 # This code will run if this file is imported
@@ -364,3 +372,63 @@ def makeEfficiencyVsEtaPlot(num_unbinned, den_unbinned, title, textStr, xvline, 
     # Returning the final figure with both plots drawn
     return fig2
 
+def makeEfficiencyVsPhiPlot(num_unbinned, den_unbinned, title, textStr, xvline, verbose=False):
+    """
+       makeEfficiencyVsPhiPlot creates a binned histogram plot of the ratio of num_unbinned and den_unbinned vs phi
+       and calls getEfficiciencyHist.
+
+       NOTE: num_unbinned should be a strict subset of den_unbinned.
+
+       INPUT:
+             num_unbinned - TYPE: numpy array-like
+             den_unbinned - TYPE: numpy array-like
+             title - TYPE: String (Plot Title)
+             textStr - TYPE: String (Text Box Info)
+             xvline - TYPE: Float (x value of vertical line)
+       OUTPUT:
+             fig - TYPE: MatPlotLib PyPlot Figure containing efficiency vs phi plot
+    """
+
+    if(verbose):
+        print("\nInitializing Figures and Binning phi Histograms")
+
+    # Binning unbinned entries with 90 bins from -180 to 180
+    den_binned, den_bins = np.histogram(den_unbinned, 90, (-180,180))
+    num_binned, num_bins = np.histogram(num_unbinned, 90, (-180,180))
+
+    if(verbose):
+        print("Generating Efficiency vs phi Plot")
+
+    # Calling getEfficiciencyHist to get binned efficiency and Clopper-Pearson error
+    efficiency_binned, efficiency_binned_err = getEfficiciencyHist(num_binned, den_binned)
+
+    fig2, ax = plt.subplots(1)
+    fig2.suptitle(title)
+
+
+    # Plot the efficiency and errors on the axes
+    ax.errorbar([den_bins[i]+(den_bins[i+1]-den_bins[i])/2 for i in range(0, len(den_bins)-1)],
+                 efficiency_binned, yerr=efficiency_binned_err, xerr=[(den_bins[i+1] - den_bins[i])/2 for i in range(0, len(den_bins)-1)],
+                 linestyle="", marker=".", markersize=3, elinewidth = .5)
+    # Setting Labels, vertical lines, horizontal line at 90% efficiency, and plot configs
+    ax.set_ylabel("Efficiency")
+    ax.set_xlabel("$\phi$")
+    ax.axhline(linewidth=.1)
+    ax.axvline(linewidth=.1)
+    ax.grid(color='lightgray', linestyle='--', linewidth=.25)
+    ax.axhline(y=0.9, color='r', linewidth=.5, linestyle='--')
+    # Add text box in the bottom right
+    props = dict(boxstyle='square', facecolor='white', alpha=1.0)
+    ax.text(0.95, 0.05, textStr, transform=ax.transAxes, fontsize=10, verticalalignment='bottom', horizontalalignment='right', bbox=props)
+    # Set x and y limits
+    ax.set_ylim([0,1.2])
+    ax.set_xlim([-200,200])
+    # Setting all font sizes to be small (Less distracting)
+    for item in ([ax.title, ax.xaxis.label, ax.yaxis.label] + ax.get_xticklabels() + ax.get_yticklabels()):
+        item.set_fontsize(8)
+
+
+    if(verbose):
+        print("Finished Creating Phi Figures\n")
+    # Returning the final figure with both plots drawn
+    return fig2
