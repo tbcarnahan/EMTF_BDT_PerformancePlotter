@@ -21,7 +21,7 @@ if __name__ == "__main__":
 
     # Get input options from command line
     from optparse import OptionParser
-    parser = OptionParser(usage="%prog [options] outputDir inputFiles")
+    parser = OptionParser(usage="%prog [options] outputDir outputFileName inputFile")
     parser.add_option("--emtf-mode", dest="emtf_mode", type="int",
                      help="EMTF Track Mode", default=15)
     parser.add_option("--eta-mins", dest="eta_mins", type="string",
@@ -43,6 +43,12 @@ if __name__ == "__main__":
     if(len(options.eta_mins) != len(options.eta_maxs)):
         parser.print_help()
         sys.exit(1)
+    if(len(args) < 3):
+        print("\n######### MUST INCLUDE ARGS: outputDir outputFileName inputFile #########\n")
+        parser.print_help()
+        sys.exit(1)
+    if(len(args[1].split('.')) > 0):
+        args[1] = args[1].split('.')[0]
 
     if(options.verbose):
         print("#######################################################")
@@ -51,7 +57,7 @@ if __name__ == "__main__":
         print("Loaded Options and Arguments. \n")
 
     # Get input file using fileHelper
-    target_file = fileHelper.getFile(args[1], options.verbose)
+    target_file = fileHelper.getFile(args[2], options.verbose)
     
     if(options.verbose):
         print("\nTarget File Loaded\n")
@@ -73,7 +79,7 @@ if __name__ == "__main__":
     unbinned_EVT_data['TRK_hit_ids'] = branch_TRK_hit_ids.arrays()['TRK_hit_ids']
 
     # Open a matplotlib PDF Pages file
-    pp = fileHelper.openPdfPages(args[0], "plots", options.verbose)
+    pp = fileHelper.openPdfPages(args[0], args[1], options.verbose)
 
     if(options.verbose):
         print("\nCreating ETA Mask and PT_cut MASK\n")

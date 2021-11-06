@@ -60,11 +60,11 @@ Additionally there are helper classes in the `helpers` directory which can be us
 ### Efficiency Plotter
 `efficiencyPlotter.py` is responsible for making efficiency plots. It can be called directly by:
 ```
-python3 efficiencyPlotter.py <options> outputDir inputFile
+python3 efficiencyPlotter.py <options> outputDir outputFileName inputFile
 ```
 To see a full list of options you can execute `python3 efficiencyPlotter.py --help`
 
-This plotter will generate efficiency vs pT and efficiency vs eta plots for multiple selections passed through `<options>`.
+This plotter will generate efficiency vs pT, efficiency vs eta, and efficiency vs phi plots for multiple selections passed through `<options>`. These plots will be saved to a pdf specified by `outputDir` and `outputFileName`.
 
 ### Occupancy Plotter
 `occupancyPlotter.py` is responsible for making occupancy plots.
