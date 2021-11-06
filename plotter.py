@@ -34,6 +34,8 @@ if __name__ == "__main__":
                      help="Print extra debug info", default=False)
     parser.add_option("-e","--eff", dest="makeEfficiency",
                      help="Make efficiency plots", default=False)
+    parser.add_option("-r","--res", dest="makeResolution",
+                     help="Make resolution plots", default=False)
     options, args = parser.parse_args()
 
     # Convert string arrays to float values
@@ -158,6 +160,8 @@ if __name__ == "__main__":
                 pp.savefig(eta_fig)
                 pp.savefig(phi_fig)
                 pp.savefig(pt_fig)
+            if(options.makeResolution):
+                print("RESOLUTION PLOTS WILL BE HERE")
             ###############################
 
 
