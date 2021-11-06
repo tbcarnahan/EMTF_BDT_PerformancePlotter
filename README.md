@@ -55,8 +55,11 @@ The repository is structure so that one could run each individual plotter sepera
 Additionally there are helper classes in the `helpers` directory which can be used to store multiuse functions or useful calculations.
 
 ### General Plotter
-`plotter.py` is responsible for making general plots.
-
+`plotter.py` is responsible for making general plots. It can make efficiency plots and resolution plots for different selections. It can be called by,
+```
+python3 plotter.py <options> outputDir outputFileName inputFile
+```
+The options `-e` or `--eff` will set a flag to create efficiency plots and `-r` or `--res` will seta flag to create resolution plots. Additional options can be seen by running `python3 plotter.py --help`
 ### Efficiency Plotter
 `efficiencyPlotter.py` is responsible for making efficiency plots. It can be called directly by:
 ```
