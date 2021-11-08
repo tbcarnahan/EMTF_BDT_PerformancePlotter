@@ -204,8 +204,6 @@ def getResolutionHist(num_binned, den_binned): #what are my inputs? binned x-axi
 
 '''Matthew's script defines plot as :
 
-Also need definition of Gaussian distribution code for matplotlib
-
 def resolutionVsPt(options, emtfMode, eventTrees, legendEntries):
   print(colored("Making resolution vs pT plots for mode {}".format(emtfMode), 'yellow'))
   pass
@@ -213,6 +211,8 @@ def resolutionVsPt(options, emtfMode, eventTrees, legendEntries):
 def resolutionVsEta(options, emtfMode, eventTrees, legendEntries):
   print(colored("Making resolution vs eta plots for mode {}".format(emtfMode), 'yellow'))
   pass'''
+
+# Also need definition of Gaussian distribution code for matplotlib
 
 def makeResolutionVsPtPlot(title, textStr, verbose=False): #num_unbinned, den_unbinned, xvline (horizontal line) = nix
     """
@@ -255,13 +255,21 @@ def makeResolutionVsPtPlot(title, textStr, verbose=False): #num_unbinned, den_un
     ax.errorbar([den_bins[i]+(den_bins[i+1]-den_bins[i])/2 for i in range(0, len(den_bins)-1)],
                     efficiency_binned, yerr=efficiency_binned_err, xerr=[(bins[i+1] - bins[i])/2 for i in range(0, len(bins)-1)],
                     linestyle="", marker=".", markersize=3, elinewidth = .5)
-    #Define distribution:
+    #Define Gaussian distribution:
     #generate unbinned res (Gen_pT - BDT_pT)/GEN_pT --> make a hist by binning this as a variable in x (gaussian around 0) with x = res binned and y = # events in bin
     x_axis = np.arange(-50,50,0.1) #need to define the variable here
     mean = statistics.mean(x_axis)
     sd = statistics.stdev(x_axis)
     ax.plot(x_axis, norm.pdf(x_axis, mean, sd))
     ax.show()
+    
+    #above seems archaic so try something like:
+    draw_res_axis_label = ["('GEN_pT' - 'BDT_pT') / 'GEN_pT'", "Number of events"]
+    draw_res_option = [""] #??
+    draw_res_label = ["Gaussian distribution"]
+    res_type = ["mu", "sigma"]
+    ##define mu and sigma
+    
     # Setting Labels, vertical lines, horizontal line at 90% efficiency, and plot configs
     ax.set_ylabel("Number of events") #y-axis = number of events
     ax.set_xlabel("$p_T$(GeV)") #x-axis = binned resolution
