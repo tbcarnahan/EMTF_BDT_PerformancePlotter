@@ -251,10 +251,17 @@ def makeResolutionVsPtPlot(title, textStr, verbose=False): #num_unbinned, den_un
     fig2.suptitle(title)
 
 
-    # Plotting on first set of axes
+    # Plotting errors = do I need den/num
     ax.errorbar([den_bins[i]+(den_bins[i+1]-den_bins[i])/2 for i in range(0, len(den_bins)-1)],
                     efficiency_binned, yerr=efficiency_binned_err, xerr=[(bins[i+1] - bins[i])/2 for i in range(0, len(bins)-1)],
                     linestyle="", marker=".", markersize=3, elinewidth = .5)
+    #Define distribution:
+    #generate unbinned res (Gen_pT - BDT_pT)/GEN_pT --> make a hist by binning this as a variable in x (gaussian around 0) with x = res binned and y = # events in bin
+    x_axis = np.arange(-50,50,0.1) #need to define the variable here
+    mean = statistics.mean(x_axis)
+    sd = statistics.stdev(x_axis)
+    ax.plot(x_axis, norm.pdf(x_axis, mean, sd))
+    ax.show()
     # Setting Labels, vertical lines, horizontal line at 90% efficiency, and plot configs
     ax.set_ylabel("Number of events") #y-axis = number of events
     ax.set_xlabel("$p_T$(GeV)") #x-axis = binned resolution
@@ -264,7 +271,7 @@ def makeResolutionVsPtPlot(title, textStr, verbose=False): #num_unbinned, den_un
     ax.text(0.95, 0.05, textStr, transform=ax[0].transAxes, fontsize=10, verticalalignment='bottom', horizontalalignment='right', bbox=props)
     # Setting axes limits to view turn on region
     ax.set_ylim([0,1000]) #how many events?
-    ax.set_xlim([0,50) #binned data is max = 22/50?
+    ax.set_xlim([-50,50) #binned data is max = 22/50? (take into account sign of muon in pT?)
     # Setting all font sizes to be small (Less distracting)
     for item in ([ax.title, ax.xaxis.label, ax.yaxis.label] + ax.get_xticklabels() + ax.get_yticklabels()):
         item.set_fontsize(8)
@@ -311,20 +318,17 @@ def makeResolutionVsEtaPlot(num_unbinned, den_unbinned, title, textStr, xvline, 
     ax.errorbar([den_bins[i]+(den_bins[i+1]-den_bins[i])/2 for i in range(0, len(den_bins)-1)],
                  resolution_binned, yerr=resolution_binned_err, xerr=[(den_bins[i+1] - den_bins[i])/2 for i in range(0, len(den_bins)-1)],
                  linestyle="", marker=".", markersize=3, elinewidth = .5)
-    # Setting Labels, vertical lines, horizontal line at 90% efficiency, and plot configs
+    
+    # Setting Labels, vertical lines, and plot configs
     ax.set_ylabel("Number of events")
     ax.set_xlabel("$\eta$") #binned resolution
-    ax.axhline(linewidth=.1)
-    ax.axvline(linewidth=.1)
     ax.grid(color='lightgray', linestyle='--', linewidth=.25)
-    ax.axhline(y=0.9, color='r', linewidth=.5, linestyle='--')
-    ax.axvline(x=xvline, color='r', linewidth=.5, linestyle='--')
     # Add text box in the bottom right
     props = dict(boxstyle='square', facecolor='white', alpha=1.0)
     ax.text(0.95, 0.05, textStr, transform=ax.transAxes, fontsize=10, verticalalignment='bottom', horizontalalignment='right', bbox=props)
     # Set x and y limits
-    ax.set_ylim([0,1.2])
-    ax.set_xlim([-2.5,2.5])
+    ax.set_ylim([0,1000])
+    ax.set_xlim([-50,50])
     # Setting all font sizes to be small (Less distracting)
     for item in ([ax.title, ax.xaxis.label, ax.yaxis.label] + ax.get_xticklabels() + ax.get_yticklabels()):
         item.set_fontsize(8)
