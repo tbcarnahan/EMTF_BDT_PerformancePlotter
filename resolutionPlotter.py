@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
 
-#!/usr/bin/env python3
-
 # # -*- coding: utf-8 -*-
 
 #use above line if using python2; nix if python3
@@ -161,38 +159,25 @@ if __name__ == "__main__":
 
 
 ## L145 in efficiencyPlotter as a reference:
-'''def getEfficiciencyHist(num_binned, den_binned):
+def getResolutionHist(num_binned, den_binned): #what are my inputs? binned x-axis and y = number events
     """
-       getEfficiciencyHist creates a binned histogram of the ratio of num_binned and den_binned
-       and uses a Clopper-Pearson confidence interval to find uncertainties.
+       getResolutionHist creates a binned histogram of the ratio of num_binned and den_binned
+       and uses a Gaussian distribution to find probabilities; the data closest to the mean is the most likely event distribution.
 
-       NOTE: num_binned should be a strict subset of den_binned.
-
-       NOTE: efficiency_binned_err[0] is lower error bar and efficiency_binned_err[1] is upper error bar
+       NOTE: resolution_binned_err[0] is lower error bar and resolution_binned_err[1] is upper error bar
 
        INPUT:
              num_binned - TYPE: numpy array-like
              den_binned - TYPE: numpy array-like
        OUTPUT:
-             efficiency_binned - TYPE: numpy array-like
-             efficiency_binned_err - TYPE: [numpy array-like, numpy array-like]
+             resolution_binned - TYPE: numpy array-like
+             resolution_binned_err - TYPE: [numpy array-like, numpy array-like]
        
        
     """
-    '''
 
 #start here:
 
-def resolutionVsPt(options, emtfMode, eventTrees, legendEntries):
-  print(colored("Making resolution vs pT plots for mode {}".format(emtfMode), 'yellow'))
-  pass
-
-def resolutionVsEta(options, emtfMode, eventTrees, legendEntries):
-  print(colored("Making resolution vs eta plots for mode {}".format(emtfMode), 'yellow'))
-  pass
-
-
-    
     # Initializing binned data
     resolution_binned = np.array([])
     resolution_binned_err = [np.array([]), np.array([])]
@@ -207,47 +192,40 @@ def resolutionVsEta(options, emtfMode, eventTrees, legendEntries):
             continue
 
         # Filling resolution bins
-        resolution_binned = np.append(resolution_binned, [num_binned[i]/den_binned[i]])
-
-      ''' DEFINE GAUSSIAN HERE
-      # Calculating Clopper-Pearson confidence interval
-        nsuccess = num_binned[i]
-        ntrial = den_binned[i]
-        conf = 95.0
-    
-        if nsuccess == 0:
-            alpha = 1 - conf / 100
-            plo = 0.
-            phi = scipy.stats.beta.ppf(1 - alpha, nsuccess + 1, ntrial - nsuccess)
-        elif nsuccess == ntrial:
-            alpha = 1 - conf / 100
-            plo = scipy.stats.beta.ppf(alpha, nsuccess, ntrial - nsuccess + 1)
-            phi = 1.
-        else:
-            alpha = 0.5 * (1 - conf / 100)
-            plo = scipy.stats.beta.ppf(alpha, nsuccess + 1, ntrial - nsuccess)
-            phi = scipy.stats.beta.ppf(1 - alpha, nsuccess, ntrial - nsuccess) '''
+        resolution_binned = np.append(resolution_binned) #, [num_binned[i]/den_binned[i]]) #do I need the num/denom here?
        
-        # Filling efficiency error bins
+        # Filling resolution error bins
         resolution_binned_err[0] = np.append(resolution_binned_err[0], [(resolution_binned[i] - plo)]) #plo no longer used; define Gaussian
         resolution_binned_err[1] = np.append(resolution_binned_err[1], [(phi - resolution_binned[i])])# - resolution_binned[i]])
 
     return resolution_binned, resolution_binned_err
 
-def makeResolutionVsPtPlot(num_unbinned, den_unbinned, title, textStr, xvline, verbose=False):
-    """
-       makeResolutionVsPtPlot creates a binned histogram plot of the ratio of num_unbinned and den_unbinned vs pT
-       and calls getResolutionHist.
 
-       NOTE: num_unbinned should be a strict subset of den_unbinned.
+
+'''Matthew's script defines plot as :
+
+Also need definition of Gaussian distribution code for matplotlib
+
+def resolutionVsPt(options, emtfMode, eventTrees, legendEntries):
+  print(colored("Making resolution vs pT plots for mode {}".format(emtfMode), 'yellow'))
+  pass
+
+def resolutionVsEta(options, emtfMode, eventTrees, legendEntries):
+  print(colored("Making resolution vs eta plots for mode {}".format(emtfMode), 'yellow'))
+  pass'''
+
+def makeResolutionVsPtPlot(title, textStr, verbose=False): #num_unbinned, den_unbinned, xvline (horizontal line) = nix
+    """
+       makeResolutionVsPtPlot creates a binned histogram plot of the resolution vs pT
+       and calls getResolutionHist. Resolution vs pT is meant to give a probability distribution of what pT will occur near the mean.
 
        INPUT:
              num_unbinned - TYPE: numpy array-like
              den_unbinned - TYPE: numpy array-like
              title - TYPE: String (Plot Title)
              textStr - TYPE: String (Text Box info)
-             xvline - TYPE: Float (x value of vertical line)
-       OUTPUT:
+
+        OUTPUT:
              fig - TYPE: MatPlotLib PyPlot Figure containing resolution vs pt plot
     """
 
@@ -267,54 +245,28 @@ def makeResolutionVsPtPlot(num_unbinned, den_unbinned, title, textStr, xvline, v
         print("Generating Resolution vs Pt Plot")
 
     # Calling getResolutionHist to get Resolution with Gaussian and errors
-    resolution_binned, resolution_binned_err = getResolutionHist(num_binned, den_binned)
+    resolution_binned, resolution_binned_err = getResolutionHist(num_binned, den_binned) #inputs here
 
     fig2, ax = plt.subplots(1) #no subplots for resolution
     fig2.suptitle(title)
 
 
     # Plotting on first set of axes
-    ax[0].errorbar([den_bins[i]+(den_bins[i+1]-den_bins[i])/2 for i in range(0, len(den_bins)-1)],
+    ax.errorbar([den_bins[i]+(den_bins[i+1]-den_bins[i])/2 for i in range(0, len(den_bins)-1)],
                     efficiency_binned, yerr=efficiency_binned_err, xerr=[(bins[i+1] - bins[i])/2 for i in range(0, len(bins)-1)],
                     linestyle="", marker=".", markersize=3, elinewidth = .5)
     # Setting Labels, vertical lines, horizontal line at 90% efficiency, and plot configs
-    ax[0].set_ylabel("Number of events") #y-axis = number of events
-    ax[0].set_xlabel("$p_T$(GeV)") #x-axis = binned resolution
-    ax[0].axhline(linewidth=.1)        
-    ax[0].axvline(linewidth=.1)
-    ax[0].grid(color='lightgray', linestyle='--', linewidth=.25)
-    ax[0].axhline(y=0.9, color='r', linewidth=.5, linestyle='--')
-    ax[0].axvline(x=xvline, color='r', linewidth=.5, linestyle='--')
+    ax.set_ylabel("Number of events") #y-axis = number of events
+    ax.set_xlabel("$p_T$(GeV)") #x-axis = binned resolution
+    ax.grid(color='lightgray', linestyle='--', linewidth=.25)
     # Adding a text box to bottom right
     props = dict(boxstyle='square', facecolor='white', alpha=1.0)
-    ax[0].text(0.95, 0.05, textStr, transform=ax[0].transAxes, fontsize=10, verticalalignment='bottom', horizontalalignment='right', bbox=props)
+    ax.text(0.95, 0.05, textStr, transform=ax[0].transAxes, fontsize=10, verticalalignment='bottom', horizontalalignment='right', bbox=props)
     # Setting axes limits to view turn on region
-    ax[0].set_ylim([0,1.2])
-    ax[0].set_xlim([0,max(2*xvline,50)])
+    ax.set_ylim([0,1000]) #how many events?
+    ax.set_xlim([0,50) #binned data is max = 22/50?
     # Setting all font sizes to be small (Less distracting)
-    for item in ([ax[0].title, ax[0].xaxis.label, ax[0].yaxis.label] + ax[0].get_xticklabels() + ax[0].get_yticklabels()):
-        item.set_fontsize(8)
-
-
-    # Plotting on second set of axes
-    ax[1].errorbar([den_bins[i]+(den_bins[i+1]-den_bins[i])/2 for i in range(0, len(den_bins)-1)],
-                    efficiency_binned, yerr=efficiency_binned_err, xerr=[(bins[i+1] - bins[i])/2 for i in range(0, len(bins)-1)],
-                    linestyle="", marker=".", markersize=3, elinewidth = .5)
-    # Setting Labels, vertical lines, horizontal line at 90% efficiency, and plot configs
-    ax[1].set_ylabel("Number of events")
-    ax[1].set_xlabel("$p_T$(GeV)") #binned resolution
-    ax[1].axhline(linewidth=.1)
-    ax[1].axvline(linewidth=.1)
-    ax[1].grid(color='lightgray', linestyle='--', linewidth=.25)
-    ax[1].axhline(y=0.9, color='r', linewidth=.5, linestyle='--')
-    ax[1].axvline(x=xvline, color='r', linewidth=.5, linestyle='--')
-    # Adding a text box to bottom right
-    props = dict(boxstyle='square', facecolor='white', alpha=1.0)
-    ax[1].text(0.95, 0.05, textStr, transform=ax[1].transAxes, fontsize=10, verticalalignment='bottom', horizontalalignment='right', bbox=props)
-    # Setting y-axis limit but not x-axis limit to see high pT behavior
-    ax[1].set_ylim([0,1.2])
-    # Setting all font sizes to be small (Less distracting)
-    for item in ([ax[1].title, ax[1].xaxis.label, ax[1].yaxis.label] + ax[1].get_xticklabels() + ax[1].get_yticklabels()):
+    for item in ([ax.title, ax.xaxis.label, ax.yaxis.label] + ax.get_xticklabels() + ax.get_yticklabels()):
         item.set_fontsize(8)
 
 
@@ -325,17 +277,15 @@ def makeResolutionVsPtPlot(num_unbinned, den_unbinned, title, textStr, xvline, v
 
 def makeResolutionVsEtaPlot(num_unbinned, den_unbinned, title, textStr, xvline, verbose=False):
     """
-       makeResolutionVsEtaPlot creates a binned histogram plot of the ratio of num_unbinned and den_unbinned vs eta
-       and calls getEfficiciencyHist.
-
-       NOTE: num_unbinned should be a strict subset of den_unbinned.
+       makeResolutionVsEtaPlot creates a binned histogram plot of the resolution vs eta
+       and calls getEfficiciencyHist. The resolution is a marker of what distribution of pT will probably occur for a set mean of events.
 
        INPUT:
              num_unbinned - TYPE: numpy array-like
              den_unbinned - TYPE: numpy array-like
              title - TYPE: String (Plot Title)
              textStr - TYPE: String (Text Box Info)
-             xvline - TYPE: Float (x value of vertical line)
+             
        OUTPUT:
              fig - TYPE: MatPlotLib PyPlot Figure containing resolution vs eta plot
     """
