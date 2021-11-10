@@ -73,7 +73,7 @@ This plotter will generate efficiency vs pT and efficiency vs eta plots for mult
 `occupancyPlotter.py` is responsible for making occupancy plots.
 
 ### Resolution Plotter
-`resolutionPlotter.py` is responsible for making resolution plots. It can be called directly by:
+`resolutionPlotter.py` is responsible for making resolution plots, which are probability distributions for missing pT for a certain number of events (i.e. how precisely the trigger is estimating muon pT). The resolution plotter gives more information on how to scale the efficiency plots for a turn-on rate efficiency of =>90%. It can be called directly by:
 ```
 python3 resolutionPlotter.py <options> outputDir inputFile
 ```
