@@ -1,11 +1,7 @@
 #!/usr/bin/env python3
 
-# # -*- coding: utf-8 -*-
-
-#use above line if using python2; nix if python3
-
 #using efficiencyPlotter.py and macros_Rice2020/resolutionPlots.py
-#to solve: 1) what is resolution (how defined)
+#to solve: 1) what is resolution
 #2) generate unbinned res (Gen_pT - BDT_pT)/GEN_pT --> make a hist by binning this (gaussian around 0) with x = res binned and y = # events in bin
 #^resolve
 
