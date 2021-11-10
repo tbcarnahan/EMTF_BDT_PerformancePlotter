@@ -8,15 +8,15 @@
 import helpers.fileHelper as fileHelper
 
 import hist
-from hist import Hist ##keep??
+from hist import Hist
 import mplhep as hep
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 
 import numpy as np
-from array import *
-from termcolor import colored
-from optparse import OptionParser,OptionGroup
+#from array import *
+#from termcolor import colored
+#from optparse import OptionParser,OptionGroup
 
 import scipy
 import awkward
@@ -45,7 +45,7 @@ if __name__ == "__main__":
     
     # Convert string arrays to float values
     options.pt_cuts = [float(pt) for pt in options.pt_cuts[1:-1].split(',')]
-    options.eta_mins = [float(eta) for eta in options.eta_mins[1:-1].split(',')]
+    options.eta_mins = [float(eta) for eta in options.eta_mins[1:-1].split(',')] #do we need to include these?
     options.eta_maxs = [float(eta) for eta in options.eta_maxs[1:-1].split(',')]
 
     # Check to make sure inputs match and if not print help
@@ -155,16 +155,16 @@ if __name__ == "__main__":
 
 
 ## L145 in efficiencyPlotter as a reference:
-def getResolutionHist(num_binned, den_binned): #what are my inputs? binned x-axis and y = number events
+def getResolutionHist(res_binned,): #what are my inputs? binned x-axis and y = number events
     """
-       getResolutionHist creates a binned histogram of the ratio of num_binned and den_binned
+       getResolutionHist creates a binned histogram for (GEN_pT - BDT_pT)/GEN_pT and (1/GEN_pT - 1/BDT_pT)/(1/GEN_pT) for bending resolution (since pT is indirectly proportional to bending).
        and uses a Gaussian distribution to find probabilities; the data closest to the mean is the most likely event distribution.
 
        NOTE: resolution_binned_err[0] is lower error bar and resolution_binned_err[1] is upper error bar
 
        INPUT:
-             num_binned - TYPE: numpy array-like
-             den_binned - TYPE: numpy array-like
+             res_binned - TYPE: numpy array-like
+             
        OUTPUT:
              resolution_binned - TYPE: numpy array-like
              resolution_binned_err - TYPE: [numpy array-like, numpy array-like]
@@ -179,45 +179,49 @@ def getResolutionHist(num_binned, den_binned): #what are my inputs? binned x-axi
     resolution_binned_err = [np.array([]), np.array([])]
 
     # Iterating through each bin 
-    for i in range(0, len(den_binned)):
-        # Catching division by 0 error
+    for i in range(0, len(res_binned)):
+        '''# Catching division by 0 error
         if(den_binned[i] == 0):
             resolution_binned = np.append(resolution_binned, 0)
             resolution_binned_err[0] = np.append(resolution_binned_err[0], [0])
-            resolution_binned_err[1] = np.append(resolution_binned_err[1], [0])
-            continue
+          resolution_binned_err[1] = np.append(resolution_binned_err[1], [0])
+           continue'''
 
         # Filling resolution bins
-        resolution_binned = np.append(resolution_binned) #, [num_binned[i]/den_binned[i]]) #do I need the num/denom here?
+        resolution_binned = np.append(resolution_binned) , [res_binned[i]) #nix num/denom
        
-        # Filling resolution error bins
+     ''' Calculating Clopper-Pearson confidence interval
+        nsuccess = num_binned[i]
+        ntrial = den_binned[i]
+        conf = 95.0
+    
+        if nsuccess == 0:
+            alpha = 1 - conf / 100
+            plo = 0.
+            phi = scipy.stats.beta.ppf(1 - alpha, nsuccess + 1, ntrial - nsuccess)
+        elif nsuccess == ntrial:
+            alpha = 1 - conf / 100
+            plo = scipy.stats.beta.ppf(alpha, nsuccess, ntrial - nsuccess + 1)
+            phi = 1.
+        else:
+            alpha = 0.5 * (1 - conf / 100)
+            plo = scipy.stats.beta.ppf(alpha, nsuccess + 1, ntrial - nsuccess)
+            phi = scipy.stats.beta.ppf(1 - alpha, nsuccess, ntrial - nsuccess)
+        #Filling resolution error bins - from Clopper-Pearson
         resolution_binned_err[0] = np.append(resolution_binned_err[0], [(resolution_binned[i] - plo)]) #plo no longer used; define Gaussian
         resolution_binned_err[1] = np.append(resolution_binned_err[1], [(phi - resolution_binned[i])])# - resolution_binned[i]])
-
-    return resolution_binned, resolution_binned_err
-
-
-
-'''Matthew's script defines plot as :
-
-def resolutionVsPt(options, emtfMode, eventTrees, legendEntries):
-  print(colored("Making resolution vs pT plots for mode {}".format(emtfMode), 'yellow'))
-  pass
-
-def resolutionVsEta(options, emtfMode, eventTrees, legendEntries):
-  print(colored("Making resolution vs eta plots for mode {}".format(emtfMode), 'yellow'))
-  pass'''
+'''
+    return resolution_binned #, resolution_binned_err
 
 # Also need definition of Gaussian distribution code for matplotlib
 
-def makeResolutionVsPtPlot(title, textStr, verbose=False): #num_unbinned, den_unbinned, xvline (horizontal line) = nix
+def makeResolutionVsPtPlot(res_binned, title, textStr, verbose=False): #num_unbinned, den_unbinned, xvline (horizontal line) = nix
     """
        makeResolutionVsPtPlot creates a binned histogram plot of the resolution vs pT
        and calls getResolutionHist. Resolution vs pT is meant to give a probability distribution of what pT will occur near the mean.
 
        INPUT:
-             num_unbinned - TYPE: numpy array-like
-             den_unbinned - TYPE: numpy array-like
+             res_unbinned - TYPE: numpy array-like
              title - TYPE: String (Plot Title)
              textStr - TYPE: String (Text Box info)
 
@@ -230,30 +234,30 @@ def makeResolutionVsPtPlot(title, textStr, verbose=False): #num_unbinned, den_un
 
     # Initializing bins and binning histograms from unbinned entries
     # Bins start small and get larger toward larger pT
-    bins = [0,1,2,3,4,5,6,7,8,9,10,12,14,16,18,
+    '''bins = [0,1,2,3,4,5,6,7,8,9,10,12,14,16,18,
            20,22,24,26,28,30,32,34,36,38,40,42,
            44,46,48,50,60,70,80,90,100,150,200,
-           250,300,400,500,600,700,800,900,1000]
-    den_binned, den_bins = np.histogram(den_unbinned, bins, (0,1000))
-    num_binned, num_bins = np.histogram(num_unbinned, bins, (0,1000))
+           250,300,400,500,600,700,800,900,1000]'''
+    res_unbinned = np.histogram(res_unbinned, bins, (-256,256)) #res_unbinned, bins=50, range
+    #num_binned, num_bins = np.histogram(num_unbinned, bins, (0,1000))
 
     if(verbose):
         print("Generating Resolution vs Pt Plot")
 
     # Calling getResolutionHist to get Resolution with Gaussian and errors
-    resolution_binned, resolution_binned_err = getResolutionHist(num_binned, den_binned) #inputs here
+    resolution_binned, resolution_binned_err = getResolutionHist(res_unbinned) #inputs here
 
     fig2, ax = plt.subplots(1) #no subplots for resolution
     fig2.suptitle(title)
 
 
-    # Plotting errors = do I need den/num
-    ax.errorbar([den_bins[i]+(den_bins[i+1]-den_bins[i])/2 for i in range(0, len(den_bins)-1)],
-                    efficiency_binned, yerr=efficiency_binned_err, xerr=[(bins[i+1] - bins[i])/2 for i in range(0, len(bins)-1)],
+    # Plotting errors
+    ax.errorbar([bins[i]+(bins[i+1]-bins[i])/2 for i in range(0, len(bins)-1)],
+                    resolution_binned, xerr=[(bins[i+1] - bins[i])/2 for i in range(0, len(bins)-1)], #xerr = 10.24
                     linestyle="", marker=".", markersize=3, elinewidth = .5)
     #Define Gaussian distribution:
     #generate unbinned res (Gen_pT - BDT_pT)/GEN_pT --> make a hist by binning this as a variable in x (gaussian around 0) with x = res binned and y = # events in bin
-    x_axis = np.arange(-50,50,0.1) #need to define the variable here
+   ''' x_axis = np.arange(-50,50,0.1) #need to define the variable here
     mean = statistics.mean(x_axis)
     sd = statistics.stdev(x_axis)
     ax.plot(x_axis, norm.pdf(x_axis, mean, sd))
@@ -264,7 +268,7 @@ def makeResolutionVsPtPlot(title, textStr, verbose=False): #num_unbinned, den_un
     draw_res_option = [""] #??
     draw_res_label = ["Gaussian distribution"]
     res_type = ["mu", "sigma"]
-    ##define mu and sigma
+    ##define mu and sigma'''
     
     # Setting Labels, vertical lines, horizontal line at 90% efficiency, and plot configs
     ax.set_ylabel("Number of events") #y-axis = number of events
@@ -274,8 +278,8 @@ def makeResolutionVsPtPlot(title, textStr, verbose=False): #num_unbinned, den_un
     props = dict(boxstyle='square', facecolor='white', alpha=1.0)
     ax.text(0.95, 0.05, textStr, transform=ax[0].transAxes, fontsize=10, verticalalignment='bottom', horizontalalignment='right', bbox=props)
     # Setting axes limits to view turn on region
-    ax.set_ylim([0,1000]) #how many events?
-    ax.set_xlim([-50,50) #binned data is max = 22/50? (take into account sign of muon in pT?)
+     #ax.set_ylim([0,1000]) #how many events? = leave out to maximize y
+    ax.set_xlim([-256,256)
     # Setting all font sizes to be small (Less distracting)
     for item in ([ax.title, ax.xaxis.label, ax.yaxis.label] + ax.get_xticklabels() + ax.get_yticklabels()):
         item.set_fontsize(8)
@@ -286,27 +290,26 @@ def makeResolutionVsPtPlot(title, textStr, verbose=False): #num_unbinned, den_un
     # Returning the final figure with both plots drawn
     return fig2
 
-def makeResolutionVsEtaPlot(num_unbinned, den_unbinned, title, textStr, xvline, verbose=False):
+def makeResolutionVsInversepTPlot(res_unbinned, title, textStr, verbose=False):
     """
-       makeResolutionVsEtaPlot creates a binned histogram plot of the resolution vs eta
-       and calls getEfficiciencyHist. The resolution is a marker of what distribution of pT will probably occur for a set mean of events.
+       makeResolutionVsInversepTPlot creates a binned histogram plot of the resolution vs 1/pT (or bending resolution)
+       and calls getResolutionHist. The resolution is a marker of what distribution of bending will probably occur for a set mean of events.
 
        INPUT:
-             num_unbinned - TYPE: numpy array-like
-             den_unbinned - TYPE: numpy array-like
+             res_unbinned - TYPE: numpy array-like
              title - TYPE: String (Plot Title)
              textStr - TYPE: String (Text Box Info)
              
        OUTPUT:
-             fig - TYPE: MatPlotLib PyPlot Figure containing resolution vs eta plot
+             fig - TYPE: MatPlotLib PyPlot Figure containing resolution vs bending plot
     """
 
     if(verbose):
         print("\nInitializing Figures and Binning eta Histograms")
 
     # Binning unbinned entries with 50 bins from -2.5 to 2.5 (Seeing both endcaps)
-    den_binned, den_bins = np.histogram(den_unbinned, 50, (-2.5,2.5))
-    num_binned, num_bins = np.histogram(num_unbinned, 50, (-2.5,2.5))
+    res_binned, bins = np.histogram(res_unbinned, 50, (-2.5,2.5))
+    # num_binned, num_bins = np.histogram(num_unbinned, 50, (-2.5,2.5))
 
     if(verbose):
         print("Generating Resolution vs eta Plot")
