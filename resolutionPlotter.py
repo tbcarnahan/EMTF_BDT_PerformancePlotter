@@ -155,10 +155,10 @@ if __name__ == "__main__":
 
 
 ## L145 in efficiencyPlotter as a reference:
-def getResolutionHist(res_binned,): #what are my inputs? binned x-axis and y = number events
+def getResolutionHist(res_binned): #what are my inputs? binned x-axis and y = number events
     """
        getResolutionHist creates a binned histogram for (GEN_pT - BDT_pT)/GEN_pT and (1/GEN_pT - 1/BDT_pT)/(1/GEN_pT) for bending resolution (since pT is indirectly proportional to bending).
-       and uses a Gaussian distribution to find probabilities; the data closest to the mean is the most likely event distribution.
+       Uses a Gaussian distribution to find how well we're tagging pT; the data closest to the mean is the most likely event distribution (we want a Gaussian central around 0).
 
        NOTE: resolution_binned_err[0] is lower error bar and resolution_binned_err[1] is upper error bar
 
@@ -211,9 +211,9 @@ def getResolutionHist(res_binned,): #what are my inputs? binned x-axis and y = n
         resolution_binned_err[0] = np.append(resolution_binned_err[0], [(resolution_binned[i] - plo)]) #plo no longer used; define Gaussian
         resolution_binned_err[1] = np.append(resolution_binned_err[1], [(phi - resolution_binned[i])])# - resolution_binned[i]])
 '''
-    return resolution_binned #, resolution_binned_err
+    return resolution_binned, resolution_binned_err #, resolution_binned_err ?
 
-# Also need definition of Gaussian distribution code for matplotlib
+# Also need definition of Gaussian distribution code from numpy
 
 def makeResolutionVsPtPlot(res_binned, title, textStr, verbose=False): #num_unbinned, den_unbinned, xvline (horizontal line) = nix
     """
@@ -238,17 +238,22 @@ def makeResolutionVsPtPlot(res_binned, title, textStr, verbose=False): #num_unbi
            20,22,24,26,28,30,32,34,36,38,40,42,
            44,46,48,50,60,70,80,90,100,150,200,
            250,300,400,500,600,700,800,900,1000]'''
-    res_unbinned = np.histogram(res_unbinned, bins, (-256,256)) #res_unbinned, bins=50, range
-    #num_binned, num_bins = np.histogram(num_unbinned, bins, (0,1000))
+    res_binned = np.histogram(res_unbinned, 50, (-256,256)) #res_unbinned, bins=50, range
+                                                            
+    # Define resolution:
+                                                            
+    res = numpy.divide(numpy.subtract(GEN_pt, BDT_pt), GEN_pt)
+                                                            
+    print(res)
 
     if(verbose):
-        print("Generating Resolution vs Pt Plot")
+        print("Generating Resolution vs pT Plot")
 
     # Calling getResolutionHist to get Resolution with Gaussian and errors
-    resolution_binned, resolution_binned_err = getResolutionHist(res_unbinned) #inputs here
+    resolution_binned, resolution_binned_err = getResolutionHist(res_binned) #inputs here
 
     fig2, ax = plt.subplots(1) #no subplots for resolution
-    fig2.suptitle(title)
+    fig2.suptitle("CMSSW_12_1_0_pre3 IIRC Res Sample (pT)") #change to CMSSW_12_1_0_pre3 IIRC Res Sample
 
 
     # Plotting errors
@@ -307,20 +312,25 @@ def makeResolutionVsInversepTPlot(res_unbinned, title, textStr, verbose=False):
     if(verbose):
         print("\nInitializing Figures and Binning eta Histograms")
 
-    # Binning unbinned entries with 50 bins from -2.5 to 2.5 (Seeing both endcaps)
-    res_binned, bins = np.histogram(res_unbinned, 50, (-2.5,2.5))
+    # Binning unbinned entries with 50 bins from inverse (-256,256)
+    res_binned, bins = np.histogram(res_unbinned, 50, (-1/256,1/256))
     # num_binned, num_bins = np.histogram(num_unbinned, 50, (-2.5,2.5))
 
     if(verbose):
-        print("Generating Resolution vs eta Plot")
+        print("Generating Resolution vs inverse pT Plot")
 
     # Calling getResolutionHist to get binned resolution and Gaussian and error
-    resolution_binned, resolution_binned_err = getResolutionHist(num_binned, den_binned)
+    resolution_binned, resolution_binned_err = getResolutionHist(res_binned)
 
     fig2, ax = plt.subplots(1)
-    fig2.suptitle(title)
+    fig2.suptitle("CMSSW_12_1_0_pre3 IIRC Res Sample (1/pT)")
 
-
+    # Define resolution:
+                                                            
+    res = numpy.divide(numpy.subtract(1/GEN_pt, 1/BDT_pt), 1/GEN_pt)
+                                                            
+    print(res)
+                 
     # Plot the resolution and errors on the axes
     ax.errorbar([den_bins[i]+(den_bins[i+1]-den_bins[i])/2 for i in range(0, len(den_bins)-1)],
                  resolution_binned, yerr=resolution_binned_err, xerr=[(den_bins[i+1] - den_bins[i])/2 for i in range(0, len(den_bins)-1)],
@@ -328,21 +338,20 @@ def makeResolutionVsInversepTPlot(res_unbinned, title, textStr, verbose=False):
     
     # Setting Labels, vertical lines, and plot configs
     ax.set_ylabel("Number of events")
-    ax.set_xlabel("$\eta$") #binned resolution
+    ax.set_xlabel("Bending (1/pT) distribution") #binned resolution
     ax.grid(color='lightgray', linestyle='--', linewidth=.25)
     # Add text box in the bottom right
     props = dict(boxstyle='square', facecolor='white', alpha=1.0)
     ax.text(0.95, 0.05, textStr, transform=ax.transAxes, fontsize=10, verticalalignment='bottom', horizontalalignment='right', bbox=props)
     # Set x and y limits
-    ax.set_ylim([0,1000])
-    ax.set_xlim([-50,50])
+    ax.set_xlim([-256,256])
     # Setting all font sizes to be small (Less distracting)
     for item in ([ax.title, ax.xaxis.label, ax.yaxis.label] + ax.get_xticklabels() + ax.get_yticklabels()):
         item.set_fontsize(8)
 
 
     if(verbose):
-        print("Finished Creating Eta Figures\n")
+        print("Finished Creating Inverse pT Figures\n")
     # Returning the final figure with both plots drawn
     return fig2
 
