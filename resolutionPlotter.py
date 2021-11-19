@@ -188,7 +188,7 @@ def getResolutionHist(res_binned): #what are my inputs? binned x-axis and y = nu
            continue'''
 
         # Filling resolution bins
-        resolution_binned = np.append(resolution_binned)) #, [res_binned[i]) #nix num/denom
+        resolution_binned = np.append(resolution_binned) #, [res_binned[i]) #nix num/denom
        
      ''' Calculating Clopper-Pearson confidence interval
         nsuccess = num_binned[i]
