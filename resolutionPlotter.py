@@ -262,17 +262,17 @@ def makeResolutionVsPtPlot(res_binned, title, textStr, verbose=False): #num_unbi
                     linestyle="", marker=".", markersize=3, elinewidth = .5)
     #Define Gaussian distribution:
     #generate unbinned res (Gen_pT - BDT_pT)/GEN_pT --> make a hist by binning this as a variable in x (gaussian around 0) with x = res binned and y = # events in bin
-   ''' x_axis = np.arange(-50,50,0.1) #need to define the variable here
-    mean = statistics.mean(x_axis)
-    sd = statistics.stdev(x_axis)
-    ax.plot(x_axis, norm.pdf(x_axis, mean, sd))
-    ax.show()
+    #x_axis = np.arange(-50,50,0.1) #need to define the variable here
+    #mean = statistics.mean(x_axis)
+    #sd = statistics.stdev(x_axis)
+    #ax.plot(x_axis, norm.pdf(x_axis, mean, sd))
+    #ax.show()
     
     #above seems archaic so try something like:
-    draw_res_axis_label = ["('GEN_pT' - 'BDT_pT') / 'GEN_pT'", "Number of events"]
-    draw_res_option = [""] #??
-    draw_res_label = ["Gaussian distribution"]
-    res_type = ["mu", "sigma"]
+    #draw_res_axis_label = ["('GEN_pT' - 'BDT_pT') / 'GEN_pT'", "Number of events"]
+    #draw_res_option = [""] #??
+    #draw_res_label = ["Gaussian distribution"]
+    #res_type = ["mu", "sigma"]
     ##define mu and sigma'''
     
     # Setting Labels, vertical lines, horizontal line at 90% efficiency, and plot configs
