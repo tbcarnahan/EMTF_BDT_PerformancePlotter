@@ -14,7 +14,7 @@ import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 
 import numpy as np #to plot the histogram and the Gaussian together, add below:
-from scipy.stats import norm
+#from scipy.stats import norm
 
 #from array import *
 #from termcolor import colored
