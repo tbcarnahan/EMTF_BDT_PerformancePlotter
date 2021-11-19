@@ -13,7 +13,9 @@ import mplhep as hep
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 
-import numpy as np
+import numpy as np #to plot the histogram and the Gaussian together, add below:
+from scipy.stats import norm
+
 #from array import *
 #from termcolor import colored
 #from optparse import OptionParser,OptionGroup
@@ -238,13 +240,13 @@ def makeResolutionVsPtPlot(res_binned, title, textStr, verbose=False): #num_unbi
      #      20,22,24,26,28,30,32,34,36,38,40,42,
       #     44,46,48,50,60,70,80,90,100,150,200,
        #    250,300,400,500,600,700,800,900,1000]
-    res_binned = np.histogram(res_unbinned, 50, (-256,256)) #res_unbinned, bins=50, range
+    res_binned = np.histogram(res_unbinned, bins=50, (-256,256)) #res_unbinned, bins=50, range
                                                             
     # Define resolution:
                                                             
     res = numpy.divide(numpy.subtract(GEN_pt, BDT_pt), GEN_pt)
                                                             
-    print(res)
+    print(res) #or should this command be something more like plt.show(res)?
 
     if(verbose):
         print("Generating Resolution vs pT Plot")
@@ -253,14 +255,17 @@ def makeResolutionVsPtPlot(res_binned, title, textStr, verbose=False): #num_unbi
     resolution_binned, resolution_binned_err = getResolutionHist(res_binned) #inputs here
 
     fig2, ax = plt.subplots(1) #no subplots for resolution
-    fig2.suptitle("CMSSW_12_1_0_pre3 IIRC Res Sample (pT)") #change to CMSSW_12_1_0_pre3 IIRC Res Sample
+    fig2.suptitle(title) #change to CMSSW_12_1_0_pre3 IIRC Res Sample
 
 
     # Plotting errors
     ax.errorbar([bins[i]+(bins[i+1]-bins[i])/2 for i in range(0, len(bins)-1)],
                     resolution_binned, xerr=[(bins[i+1] - bins[i])/2 for i in range(0, len(bins)-1)], #xerr = 10.24
                     linestyle="", marker=".", markersize=3, elinewidth = .5)
+   
     #Define Gaussian distribution:
+    
+    #Attempt 1:
     #generate unbinned res (Gen_pT - BDT_pT)/GEN_pT --> make a hist by binning this as a variable in x (gaussian around 0) with x = res binned and y = # events in bin
     #x_axis = np.arange(-50,50,0.1) #need to define the variable here
     #mean = statistics.mean(x_axis)
@@ -268,17 +273,35 @@ def makeResolutionVsPtPlot(res_binned, title, textStr, verbose=False): #num_unbi
     #ax.plot(x_axis, norm.pdf(x_axis, mean, sd))
     #ax.show()
     
-    #above seems archaic so try something like:
+    #Attempt 2: above seems archaic so try something like:
     #draw_res_axis_label = ["('GEN_pT' - 'BDT_pT') / 'GEN_pT'", "Number of events"]
     #draw_res_option = [""] #??
     #draw_res_label = ["Gaussian distribution"]
     #res_type = ["mu", "sigma"]
     ##define mu and sigma'''
     
+    #3
+    #Fit a normal distribution to the res data:
+    mu, std = norm.fit(res)
+    
+    #use ax.hist or plt.hist?
+    plt.hist(res, bins=50, density=True, alpha=0.6, color='g')
+    xmin, xmax = plt.xlim()
+    x = np.linspace(-256, 256) #xmin, xmax, num: int, optional (# samples to generate; default 50)
+    p = norm.pdf(x, mu, std)
+    #mu, sigma = 0, 0.1 #mean and std dev
+    #s = np.random.default_rng().normal(mu, sigma, 1000)
+    #plt.plot(bins, 1/(sigma * np.sqrt(2 * np.pi)) * np.exp( - (bines - mu)**2/ (2 * sigma**2) ), linewidth=2, color='r')
+    plt.plot(x, p, 'k', linewidth=2)
+    title = "CMSSW_12_1_0_pre3 IIRC Res Fit results: mu = %.2f, std = %.2f" % (mu, std)
+    plt.title(title)
+    plt.show()
+    
     # Setting Labels, vertical lines, horizontal line at 90% efficiency, and plot configs
     ax.set_ylabel("Number of events") #y-axis = number of events
     ax.set_xlabel("$p_T$(GeV)") #x-axis = binned resolution
     ax.grid(color='lightgray', linestyle='--', linewidth=.25)
+    
     # Adding a text box to bottom right
     props = dict(boxstyle='square', facecolor='white', alpha=1.0)
     ax.text(0.95, 0.05, textStr, transform=ax[0].transAxes, fontsize=10, verticalalignment='bottom', horizontalalignment='right', bbox=props)
