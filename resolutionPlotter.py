@@ -184,7 +184,7 @@ def getResolutionHist(res_binned): #what are my inputs? binned x-axis and y = nu
         if(res_binned[i] == 0):
             resolution_binned = np.append(resolution_binned, 0)
             resolution_binned_err[0] = np.append(resolution_binned_err[0], [0])
-          resolution_binned_err[1] = np.append(resolution_binned_err[1], [0])
+            resolution_binned_err[1] = np.append(resolution_binned_err[1], [0])
            #continue
 
         # Filling resolution bins
