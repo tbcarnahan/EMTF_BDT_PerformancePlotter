@@ -240,7 +240,7 @@ def makeResolutionVsPtPlot(res_binned, title, textStr, verbose=False): #num_unbi
      #      20,22,24,26,28,30,32,34,36,38,40,42,
       #     44,46,48,50,60,70,80,90,100,150,200,
        #    250,300,400,500,600,700,800,900,1000]
-    res_binned = np.histogram(res_unbinned, bins=50, (-256,256)) #res_unbinned, bins=50, range
+    res_binned = np.histogram(res_unbinned, 50, (-256,256)) #res_unbinned, bins=50, range
                                                             
     # Define resolution:
                                                             
