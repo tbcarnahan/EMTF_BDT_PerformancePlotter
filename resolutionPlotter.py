@@ -180,37 +180,37 @@ def getResolutionHist(res_binned): #what are my inputs? binned x-axis and y = nu
 
     # Iterating through each bin 
     for i in range(0, len(res_binned)):
-        '''# Catching division by 0 error
-        if(den_binned[i] == 0):
+        # Catching division by 0 error
+        if(res_binned[i] == 0):
             resolution_binned = np.append(resolution_binned, 0)
             resolution_binned_err[0] = np.append(resolution_binned_err[0], [0])
           resolution_binned_err[1] = np.append(resolution_binned_err[1], [0])
-           continue'''
+           #continue
 
         # Filling resolution bins
         resolution_binned = np.append(resolution_binned) #, [res_binned[i]) #nix num/denom
        
-     ''' Calculating Clopper-Pearson confidence interval
-        nsuccess = num_binned[i]
-        ntrial = den_binned[i]
-        conf = 95.0
+     #Calculating Clopper-Pearson confidence interval
+      #nsuccess = res_binned[i]
+        #ntrial = den_binned[i]
+        #conf = 95.0
     
-        if nsuccess == 0:
-            alpha = 1 - conf / 100
-            plo = 0.
-            phi = scipy.stats.beta.ppf(1 - alpha, nsuccess + 1, ntrial - nsuccess)
-        elif nsuccess == ntrial:
-            alpha = 1 - conf / 100
-            plo = scipy.stats.beta.ppf(alpha, nsuccess, ntrial - nsuccess + 1)
-            phi = 1.
-        else:
-            alpha = 0.5 * (1 - conf / 100)
-            plo = scipy.stats.beta.ppf(alpha, nsuccess + 1, ntrial - nsuccess)
-            phi = scipy.stats.beta.ppf(1 - alpha, nsuccess, ntrial - nsuccess)
+        #if nsuccess == 0:
+            #alpha = 1 - conf / 100
+            #plo = 0.
+            #phi = scipy.stats.beta.ppf(1 - alpha, nsuccess + 1, ntrial - nsuccess)
+        #elif nsuccess == ntrial:
+            #alpha = 1 - conf / 100
+            #plo = scipy.stats.beta.ppf(alpha, nsuccess, ntrial - nsuccess + 1)
+            #phi = 1.
+        #else:
+            #alpha = 0.5 * (1 - conf / 100)
+            #plo = scipy.stats.beta.ppf(alpha, nsuccess + 1, ntrial - nsuccess)
+            #phi = scipy.stats.beta.ppf(1 - alpha, nsuccess, ntrial - nsuccess)
         #Filling resolution error bins - from Clopper-Pearson
-        resolution_binned_err[0] = np.append(resolution_binned_err[0], [(resolution_binned[i] - plo)]) #plo no longer used; define Gaussian
-        resolution_binned_err[1] = np.append(resolution_binned_err[1], [(phi - resolution_binned[i])])# - resolution_binned[i]])
-'''
+        #resolution_binned_err[0] = np.append(resolution_binned_err[0], [(resolution_binned[i] - plo)]) #plo no longer used; define Gaussian
+        #resolution_binned_err[1] = np.append(resolution_binned_err[1], [(phi - resolution_binned[i])])# - resolution_binned[i]])
+
     return resolution_binned, resolution_binned_err #, resolution_binned_err ?
 
 # Also need definition of Gaussian distribution code from numpy
@@ -234,10 +234,10 @@ def makeResolutionVsPtPlot(res_binned, title, textStr, verbose=False): #num_unbi
 
     # Initializing bins and binning histograms from unbinned entries
     # Bins start small and get larger toward larger pT
-    '''bins = [0,1,2,3,4,5,6,7,8,9,10,12,14,16,18,
-           20,22,24,26,28,30,32,34,36,38,40,42,
-           44,46,48,50,60,70,80,90,100,150,200,
-           250,300,400,500,600,700,800,900,1000]'''
+    #bins = [0,1,2,3,4,5,6,7,8,9,10,12,14,16,18,
+     #      20,22,24,26,28,30,32,34,36,38,40,42,
+      #     44,46,48,50,60,70,80,90,100,150,200,
+       #    250,300,400,500,600,700,800,900,1000]
     res_binned = np.histogram(res_unbinned, 50, (-256,256)) #res_unbinned, bins=50, range
                                                             
     # Define resolution:
