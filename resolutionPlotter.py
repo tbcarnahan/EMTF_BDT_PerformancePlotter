@@ -5,8 +5,6 @@
 
 import helpers.fileHelper as fileHelper
 
-import hist
-from hist import Hist
 import mplhep as hep
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
