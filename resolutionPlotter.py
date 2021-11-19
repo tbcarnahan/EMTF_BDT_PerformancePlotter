@@ -284,7 +284,7 @@ def makeResolutionVsPtPlot(res_binned, title, textStr, verbose=False): #num_unbi
     ax.text(0.95, 0.05, textStr, transform=ax[0].transAxes, fontsize=10, verticalalignment='bottom', horizontalalignment='right', bbox=props)
     # Setting axes limits to view turn on region
      #ax.set_ylim([0,1000]) #how many events? = leave out to maximize y
-    ax.set_xlim([-256,256)
+    ax.set_xlim([-256,256])
     # Setting all font sizes to be small (Less distracting)
     for item in ([ax.title, ax.xaxis.label, ax.yaxis.label] + ax.get_xticklabels() + ax.get_yticklabels()):
         item.set_fontsize(8)
