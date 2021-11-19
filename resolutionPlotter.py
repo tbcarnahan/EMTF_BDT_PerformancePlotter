@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
-
-#using efficiencyPlotter.py and macros_Rice2020/resolutionPlots.py
-#to solve: 1) what is resolution
-#2) generate unbinned res (Gen_pT - BDT_pT)/GEN_pT --> make a hist by binning this (gaussian around 0) with x = res binned and y = # events in bin
-#^resolve
+#=====================
+#adapted from EMTF_BDT_PerformancePlotter/efficiencyPlotter.py for Fall 2021
+#using CMSSW_12_1_0_pre3 IIRC samples
 
 import helpers.fileHelper as fileHelper
 
@@ -12,19 +10,12 @@ from hist import Hist
 import mplhep as hep
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
-
-import numpy as np #to plot the histogram and the Gaussian together, add below:
-from scipy.stats import norm
-
-#from array import *
-#from termcolor import colored
-#from optparse import OptionParser,OptionGroup
-
+import numpy as np
 import scipy
 import awkward
 import sys
 import os
-import helpers.helper as helper ##keep?? (or keep line 5)
+import helpers.helper as helper
 
 if __name__ == "__main__":
     # This code will run if called from command line directly
