@@ -1,7 +1,5 @@
 ## EMTF BDT Performance Plotter
-=======
-## EMTF BDT Performance Plotter
->>>>>>> 52cc87b628f8b1fd3abcc39e41dc3d0cf3724b6f
+===============================
 This repository contains tools to evaluate the performance of the EMTF BDT after retraining.
 
 ## Setup
