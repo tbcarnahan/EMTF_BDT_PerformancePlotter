@@ -105,7 +105,7 @@ if __name__ == "__main__":
                                             (pt_cut < unbinned_EVT_data_eta_masked["BDT_pt"]),
                                             "PT CUT: " + str(pt_cut) + " < pT", options.verbose)
             """
-    pass
+
             # Generate resolution with eta input plot
             res_plot = resolutionPlotter.makeResolutionPlot(unbinned_EVT_data_eta_masked["GEN_pt"], unbinned_EVT_data_eta_masked["BDT_pt"],
                                                "EMTF BDT Resolution", "mode: " + str(options.emtf_mode)
