@@ -7,9 +7,10 @@ import helpers.fileHelper as fileHelper
 
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
-import numpy as np #to plot the histogram and the Gaussian together, add below:
-#from scipy.stats import norm
+import numpy as np
+
 import scipy
+from scipy.stats import norm
 import awkward
 import sys
 import os
@@ -219,7 +220,7 @@ def makeResolutionPlot(unbinned_GEN_pt, unbinned_BDT_pt, title, textStr, verbose
     res_unbinned = 1 - np.divide(unbinned_GEN_pt, unbinned_BDT_pt) #inverse pT relationship proportional to bending res
 
     # Initializing bins and binning histograms from unbinned entries
-    res_binned, res_bins = np.histogram(res_unbinned, 50, (-256,256)) #res_unbinned, bins=50, range (min - max pT)
+    res_binned, res_bins = np.histogram(res_unbinned, 500, (-256,256), density=True) #res_unbinned, bins=50, range (min - max pT), density=True means normalize data at bins (np.histogram(res_unbinned,500,(-256,256),density=True))
                                                             
     if(verbose):
         print("Generating Resolution Plot")
@@ -247,26 +248,30 @@ def makeResolutionPlot(unbinned_GEN_pt, unbinned_BDT_pt, title, textStr, verbose
     draw_res_label = ["Gaussian distribution"]
     res_type = ["mu", "sigma"]
     ##define mu and sigma'''
-    
+    """
 # Attempt 3:
 
     #Fit a normal distribution to the res data:
-    mu, std = norm.fit(res)
-    
-    #use ax.hist or plt.hist?
-    plt.hist(res, bins=50, density=True, alpha=0.6, color='g')
+    mu, std = norm.fit(res_unbinned)
+    print(mu, std)
+
+    plt.hist(res_unbinned, bins=100, density=True, alpha=0.6, color='b') #was plt.hist(res_unbinned, bins=100, density=True, alpha=0.6, color='g')
     xmin, xmax = plt.xlim()
-    x = np.linspace(-256, 256) #xmin, xmax, num: int, optional (# samples to generate; default 50)
+    x = np.linspace(-256, 256, num=100) #xmin, xmax, num: int, optional (# samples to generate; default 50)
     p = norm.pdf(x, mu, std)
-    mu, sigma = 0, 0.1 #mean and std dev
-    s = np.random.default_rng().normal(mu, sigma, 1000)
-    plt.plot(bins, 1/(sigma * np.sqrt(2 * np.pi)) * np.exp( - (bines - mu)**2/ (2 * sigma**2) ), linewidth=2, color='r')
+    plt.plot(x,p) #was ax.plot(x,p)
+    #title = "Fit results: mu = %.2f, std = %.2f" % (mu,std)
+    #plt.title(title)
+    #plt.show()
+    #mu, sigma = 0, 0.1 #mean and std dev
+    #s = np.default_rng().normal(mu, sigma, 1000)
+  
+    """ plt.plot(bins, 1/(sigma * np.sqrt(2 * np.pi)) * np.exp( - (bins - mu)**2/ (2 * sigma**2) ), linewidth=2, color='r')
     plt.plot(x, p, 'k', linewidth=2)
     title = "CMSSW_12_1_0_pre3 IIRC Res Fit results: mu = %.2f, std = %.2f" % (mu, std)
     plt.title(title)
     plt.show()
     """
-    pass
 
     # Setting labels and plot configs
     ax.set_ylabel("$N_{events}$") #y-axis = number of events
