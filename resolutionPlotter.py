@@ -90,7 +90,8 @@ if __name__ == "__main__":
     
 
     # Go through each PT Cut and Eta Cuts and generate figures to save to pdf
-    for pt_cut in pt_cuts:
+    GEN_pt_cuts = [[0,10],[10,20],[20,30],[30,40],[40,50],[50,75], [75,100], [100,150],[150,200]]
+    for j in range(0, len(GEN_pt_cuts)):
         for i in range(0, len(eta_mins)):
             if(options.verbose):
                 print("###################   New Cuts   ###################")
@@ -98,8 +99,8 @@ if __name__ == "__main__":
             unbinned_EVT_data_GEN_pT_pass = helper.applyMaskToEVTData(                                                            
                                             unbinned_EVT_data,                                                                   
                                             ["GEN_pt","BDT_pt", "GEN_eta", "TRK_hit_ids"],                                                  
-                                            (50 > unbinned_EVT_data["GEN_pt"]),                                              
-                                            "GEN_PT CUT: " + str(pt_cut) + " < pT", options.verbose)                                            
+                                            ((GEN_pt_cuts[j][0] < unbinned_EVT_data["GEN_pt"]) & (unbinned_EVT_data["GEN_pt"] < GEN_pt_cuts[j][1])),
+                                            "GEN_PT CUT", options.verbose)                                            
 
 
             # Apply ETA Mask
@@ -121,7 +122,7 @@ if __name__ == "__main__":
             res_plot = resolutionPlotter.makeResolutionPlot(unbinned_EVT_data_eta_masked["GEN_pt"], unbinned_EVT_data_eta_masked["BDT_pt"],
                                                "EMTF BDT Resolution \n Emulation in CMSSW_12_1_0_pre3", "mode: " + str(options.emtf_mode)
                                               + "\n" + str(eta_mins[i]) + " < $\eta$ < " + str(eta_maxs[i])
-                                              + "\n $p_T$ > " + str(pt_cut) + "GeV"
+                                              + "\n" + str(GEN_pt_cuts[j][0]) + " < $p_T^{GEN}$ < " + str(GEN_pt_cuts[j][1]) + "GeV"
                                               + "\n" + "$N_{events}$: "+str(len(unbinned_EVT_data_eta_masked["GEN_pt"])), options.verbose)
             
             # Increase size to square 6in x 6in on PDF
@@ -225,8 +226,8 @@ def makeResolutionPlot(unbinned_GEN_pt, unbinned_BDT_pt, title, textStr, verbose
 
     if(verbose):
         print("\nInitializing Figures and Binning Pt Histograms")
-    for x in range(0,100):
-        print(unbinned_GEN_pt[x], unbinned_BDT_pt[x], 1-unbinned_GEN_pt[x]/unbinned_BDT_pt[x])
+    #for x in range(0,100):
+        #print(unbinned_GEN_pt[x], unbinned_BDT_pt[x], 1-unbinned_GEN_pt[x]/unbinned_BDT_pt[x])
     # Define resolution (unbinned)
     res_unbinned = 1 - np.divide(unbinned_GEN_pt, unbinned_BDT_pt) #inverse pT relationship proportional to bending res
     res_unbinned_masked = res_unbinned[((res_unbinned < .4) & (res_unbinned > -.4))]
