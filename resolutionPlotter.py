@@ -242,14 +242,7 @@ def makeResolutionPlot(unbinned_GEN_pt, unbinned_BDT_pt, title, textStr, verbose
     ax.plot(x_axis, norm.pdf(x_axis, mean, sd))
     ax.show()
     
-# Attempt 2: above seems archaic so try something like:
-    draw_res_axis_label = ["$(1/p_T^{GEN} - 1/p_T^{BDT})/(1/p_T^{GEN})$", "Number of events"]
-    draw_res_option = [""] #??
-    draw_res_label = ["Gaussian distribution"]
-    res_type = ["mu", "sigma"]
-    ##define mu and sigma'''
     """
-# Attempt 3:
 
     #Fit a normal distribution to the res data:
     mu, sigma = scipy.stats.norm.fit(res_unbinned)
@@ -257,11 +250,11 @@ def makeResolutionPlot(unbinned_GEN_pt, unbinned_BDT_pt, title, textStr, verbose
     #plt.plot(50, fit_line)
     print(mu,sigma)
 
-    plt.hist(res_unbinned, bins=100, density=True, alpha=0.6, color='b')
+    plt.hist(res_unbinned, bins=500, density=True, alpha=0.6, color='b')
     #xmin, xmax = plt.xlim()
-    #x = np.linspace(-100, 100) #xmin, xmax, num: (100?) int, optional (# samples to generate; default 50)
-    p = norm.pdf(mu, sigma)
-    plt.plot(p) #was ax.plot(x,p)
+    x = np.linspace(-256, 256) #xmin, xmax, num:  int, optional (# samples to generate; default 50)
+    p = norm.pdf(x, mu, sigma)
+    plt.plot(x,p) #was ax.plot(x,p)
 
     #title = "Fit results: mu = %.2f, std = %.2f" % (mu,std)
     #plt.title(title)
