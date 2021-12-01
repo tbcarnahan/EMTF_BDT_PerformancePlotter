@@ -252,21 +252,24 @@ def makeResolutionPlot(unbinned_GEN_pt, unbinned_BDT_pt, title, textStr, verbose
 # Attempt 3:
 
     #Fit a normal distribution to the res data:
-    mu, std = norm.fit(res_unbinned)
-    print(mu, std)
+    mu, sigma = scipy.stats.norm.fit(res_unbinned)
+    #fit_line = scipy.stats.norm.pdf(50, mu, sigma)#print(mu,sigma)
+    #plt.plot(50, fit_line)
+    print(mu,sigma)
 
-    plt.hist(res_unbinned, bins=100, density=True, alpha=0.6, color='b') #was plt.hist(res_unbinned, bins=100, density=True, alpha=0.6, color='g')
-    xmin, xmax = plt.xlim()
-    x = np.linspace(-256, 256, num=100) #xmin, xmax, num: int, optional (# samples to generate; default 50)
-    p = norm.pdf(x, mu, std)
-    plt.plot(x,p) #was ax.plot(x,p)
+    plt.hist(res_unbinned, bins=100, density=True, alpha=0.6, color='b')
+    #xmin, xmax = plt.xlim()
+    #x = np.linspace(-100, 100) #xmin, xmax, num: (100?) int, optional (# samples to generate; default 50)
+    p = norm.pdf(mu, sigma)
+    plt.plot(p) #was ax.plot(x,p)
+
     #title = "Fit results: mu = %.2f, std = %.2f" % (mu,std)
     #plt.title(title)
     #plt.show()
     #mu, sigma = 0, 0.1 #mean and std dev
     #s = np.default_rng().normal(mu, sigma, 1000)
-  
-    """ plt.plot(bins, 1/(sigma * np.sqrt(2 * np.pi)) * np.exp( - (bins - mu)**2/ (2 * sigma**2) ), linewidth=2, color='r')
+    """
+    plt.plot(bins, 1/(sigma * np.sqrt(2 * np.pi)) * np.exp( - (bins - mu)**2/ (2 * sigma**2) ), linewidth=2, color='r')
     plt.plot(x, p, 'k', linewidth=2)
     title = "CMSSW_12_1_0_pre3 IIRC Res Fit results: mu = %.2f, std = %.2f" % (mu, std)
     plt.title(title)
