@@ -97,7 +97,7 @@ if __name__ == "__main__":
     eta_mins = options.eta_mins
     eta_maxs = options.eta_maxs
 
-    pt_value = []
+    eta_value = [] #initial: pt_value, need eta_value
     means_inv_pt = []
     std_inv_pt = []
     means_pt = []
@@ -137,7 +137,7 @@ if __name__ == "__main__":
                                               + "\n" + str(pt_ranges[j]) + " < $p_T^{GEN}$ < " + str(pt_ranges[j+1]) + "GeV"
                                               + "\n" + "$N_{events}$: "+str(len(unbinned_EVT_data_eta_masked["GEN_pt"])), "pT", options.verbose)
 
-            pt_value.append((pt_ranges[j] + pt_ranges[j+1])/2)
+            eta_value.append((eta_mins[i] + eta_mins[i+1])/2)#was pt_value.append((pt_ranges[j]+ pt_ranges[j+1])/2)
             means_inv_pt.append(means_inv_pt_elem)
             std_inv_pt.append(std_inv_pt_elem)
             means_pt.append(means_pt_elem)
@@ -154,19 +154,19 @@ if __name__ == "__main__":
     if(options.verbose):
         print("\n Creating resolution vs pt plots")
     fig_std, ax = plt.subplots(1)    
-    ax.plot(pt_value, std_inv_pt,  linestyle="", marker=".", color="r", label="1/pT")
-    ax.plot(pt_value, std_pt,  linestyle="",  marker=".", color="b", label="pT")
-    ax.set_title("1/$p_T$ Resolution vs $p_T$")
-    ax.set_xlabel("pT")
+    ax.plot(eta_value, std_inv_pt,  linestyle="", marker=".", color="r", label="1/pT")#was (pt_value, ...)
+    ax.plot(eta_value, std_pt,  linestyle="",  marker=".", color="b", label="pT")#was (pt_value, ...)
+    ax.set_title("1/$p_T$ Resolution vs $\eta$")
+    ax.set_xlabel("$\eta$")
     ax.set_ylabel("1/$p_T$ Resolution (as % $p_T$)")
     ax.set_ylim([0, 2])
     ax.grid(color='lightgray', linestyle='--', linewidth=.25)
     ax.legend()
     fig_mu, ax = plt.subplots(1)
-    ax.plot(pt_value, means_inv_pt,  linestyle="",  marker=".", color="r", label="1/$p_T$")
-    ax.plot(pt_value, means_pt,  linestyle="", marker=".", color="b", label="$p_T$")
-    ax.set_title("$p_T$ Bias vs $p_T$")
-    ax.set_xlabel("$p_T$")
+    ax.plot(eta_value, means_inv_pt,  linestyle="",  marker=".", color="r", label="1/$p_T$")#was (pt_value, ...)
+    ax.plot(eta_value, means_pt,  linestyle="", marker=".", color="b", label="$p_T$")#was (pt_value, ...)
+    ax.set_title("$p_T$ Bias vs $\eta$")
+    ax.set_xlabel("$\eta$")
     ax.set_ylabel("Bias")
     ax.set_ylim([-4, 4])
     ax.grid(color='lightgray', linestyle='--', linewidth=.25)
