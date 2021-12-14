@@ -78,7 +78,7 @@ def openPdfPages(directory, file_name, verbose):
         file_name_index += 1
 
     if(verbose):
-        print("\nOpening PDF:" + directory + "/plots" + str(file_name_mod) + ".pdf" + "\n")
+        print("\nOpening PDF:" + directory + "/" + file_name + str(file_name_mod) + ".pdf" + "\n")
 
     pdf_pages = PdfPages(directory + "/" + file_name + str(file_name_mod) + ".pdf")
     return pdf_pages
