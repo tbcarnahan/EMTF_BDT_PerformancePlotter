@@ -137,7 +137,7 @@ if __name__ == "__main__":
                                               + "\n" + str(pt_ranges[j]) + " < $p_T^{GEN}$ < " + str(pt_ranges[j+1]) + "GeV"
                                               + "\n" + "$N_{events}$: "+str(len(unbinned_EVT_data_eta_masked["GEN_pt"])), "pT", options.verbose)
 
-            eta_value.append((eta_mins[i] + eta_mins[i+1])/2)#was pt_value.append((pt_ranges[j]+ pt_ranges[j+1])/2)
+            eta_value.append((eta_mins[i] + eta_maxs[i])/2)#was pt_value.append((pt_ranges[j]+ pt_ranges[j+1])/2)
             means_inv_pt.append(means_inv_pt_elem)
             std_inv_pt.append(std_inv_pt_elem)
             means_pt.append(means_pt_elem)
@@ -248,9 +248,9 @@ def makeResolutionPlot(unbinned_GEN_pt, unbinned_BDT_pt, title, textStr, resType
 
     # Setting labels and plot configs
     ax.set_ylabel("$N_{events}$") #y-axis = number of events
-    ax.set_xlabel("$(1/p_T^{GEN} - 1/p_T^{BDT})/(1/p_T^{GEN})$") #x-axis = binned resolution
+    ax.set_xlabel("$\eta$")#("$(1/p_T^{GEN} - 1/p_T^{BDT})/(1/p_T^{GEN})$") #x-axis = binned resolution
     if(resType == "pT"):
-        ax.set_xlabel("$(p_T^{GEN} - p_T^{BDT})/(p_T^{GEN})$")
+        ax.set_xlabel("$\eta$")#("$(p_T^{GEN} - p_T^{BDT})/(p_T^{GEN})$")
     ax.grid(color='lightgray', linestyle='--', linewidth=.25)
     
     # Adding a text box to bottom right
